@@ -2,9 +2,14 @@ from flask import Flask
 import re
 import datetime
 
+from flask_cors import CORS
+
 x = datetime.datetime.now()
 
 app = Flask(__name__)
+
+# Configure CORS to allow requests from http://localhost:3000
+CORS(app, resources={r"/data": {"origins": "http://localhost:3000"}})
 
 # python -m server run
 
