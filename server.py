@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import re
 import datetime
-
+import os
 from flask_cors import CORS
 
 
@@ -75,14 +75,25 @@ def signIn() -> bool:
 
 @app.route('/sendManifest', methods=['POST'])
 def receiveManifest():
+    # This function does a couple of things:
+    # 1) Deletes the old manifest
+    # 2) Saves the new manifest (save the actual file) and (save the name of the file in manifestName.txt)
+
     if request.method == 'POST':
         if request.files:
             uploaded_file = request.files['textfile']
 
+            # Delete the old manifest if it exists
+            if os.path.exists('./manifestName.txt'):
+                with open('./manifestName.txt', 'r') as name_file:
+                    old_manifest_name = name_file.read().strip()
+                if os.path.exists(f'./{old_manifest_name}'):
+                    os.remove(f'./{old_manifest_name}')
+
             # Process the uploaded file as needed
             if uploaded_file:
-
                 fileName = uploaded_file.filename
+
                 # Save the uploaded file to a specific directory
                 uploaded_file.save(f'./{fileName}')
 
