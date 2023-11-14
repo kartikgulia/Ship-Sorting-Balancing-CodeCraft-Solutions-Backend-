@@ -5,6 +5,10 @@ import datetime
 from flask_cors import CORS
 
 
+# Functions from other files
+from writeToLog import writeToLog
+
+
 app = Flask(__name__)
 
 # Configure CORS to allow requests from http://localhost:3000
@@ -35,13 +39,36 @@ def get_time():
     }
 
 
-@app.route('/sendName', methods=['POST'])
-def send_name():
+# @app.route('/sendName', methods=['POST'])
+# def send_name():
+#     if request.method == 'POST':
+#         data = request.json  # Assuming data is sent as JSON
+#         name = data.get('name')
+#         print("Received name:", name)
+#         return jsonify({'message': 'Name received successfully'})
+
+
+@app.route('/signin', methods=['POST'])
+def signIn() -> bool:
+
+    # This method does 3 things:
+    # 1) Receives the curr and prev users from the frontend.
+    # 2) Write to log "Prev User signed out"
+    # 3) Write to log "Curr User signed in"
+
     if request.method == 'POST':
-        data = request.json  # Assuming data is sent as JSON
-        name = data.get('name')
-        print("Received name:", name)
-        return jsonify({'message': 'Name received successfully'})
+        data: request.json
+
+        previousUser = data.get('previousUser')
+        currentUser = data.get('currentUser')
+
+        signOutText = f"{previousUser} signs out"
+        signInText = f"{currentUser} signs in"
+
+        writeToLog(signOutText)
+        writeToLog(signInText)
+
+        return True
 
 
 if __name__ == '__main__':
