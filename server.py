@@ -12,12 +12,11 @@ from writeToLog import writeToLog
 app = Flask(__name__)
 
 CORS(app, resources={
-    r"/data": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500"]},
-    r"/sendName": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500/index.html"]},
-    r"/signIn": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500/index.html"]},
-    r"/sendManifest": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500/index.html"]}
+    r"/data": {"origins": "*"},
+    r"/sendName": {"origins": "*"},
+    r"/signIn": {"origins": "*"},
+    r"/sendManifest": {"origins": "*"}
 })
-
 # python -m server run
 
 
@@ -74,21 +73,22 @@ def signIn() -> bool:
         return jsonify({'success': False})
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
 @app.route('/sendManifest', methods=['POST'])
 def receiveManifest():
     if request.method == 'POST':
-
-        if 'textfile' in request.files:
+        if request.files:
             uploaded_file = request.files['textfile']
 
             # Process the uploaded file as needed
             if uploaded_file:
-                # Example: Save the uploaded file to a specific directory
-                uploaded_file.save('./manifest.txt')
+
+                fileName = uploaded_file.filename
+                # Save the uploaded file to a specific directory
+                uploaded_file.save(f'./{fileName}')
+
+                # Save the name of the uploaded file to "manifestName.txt"
+                with open('./manifestName.txt', 'w') as name_file:
+                    name_file.write(fileName)
 
                 # You can also read the content of the file if needed
                 file_content = uploaded_file.read()
@@ -96,7 +96,7 @@ def receiveManifest():
 
                 # Perform any additional processing on the file content here
 
-            return jsonify({'success': True})
+                return jsonify({'success': True})
         else:
             return jsonify({'success': False})
 
