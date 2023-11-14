@@ -11,12 +11,11 @@ from writeToLog import writeToLog
 
 app = Flask(__name__)
 
-# Configure CORS to allow requests from http://localhost:3000
 CORS(app, resources={
-
-    r"/data": {"origins": "http://localhost:3000"},
-    r"/sendName": {"origins": "http://localhost:3000"}
-
+    r"/data": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500"]},
+    r"/sendName": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500/index.html"]},
+    r"/signIn": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500/index.html"]},
+    r"/sendManifest": {"origins": ["http://localhost:3000", "http://127.0.0.1:5500/index.html"]}
 })
 
 # python -m server run
@@ -50,25 +49,56 @@ def get_time():
 
 @app.route('/signin', methods=['POST'])
 def signIn() -> bool:
+    try:
+        if request.method == 'POST':
+            data = request.json
 
-    # This method does 3 things:
-    # 1) Receives the curr and prev users from the frontend.
-    # 2) Write to log "Prev User signed out"
-    # 3) Write to log "Curr User signed in"
+            # Check if 'previousUser' and 'currentUser' keys are present in the JSON data
+            if 'previousUser' not in data or 'currentUser' not in data:
+                raise ValueError(
+                    "Missing 'previousUser' or 'currentUser' in JSON data")
 
+            previousUser = data['previousUser']
+            currentUser = data['currentUser']
+
+            signOutText = f"{previousUser} signs out"
+            signInText = f"{currentUser} signs in"
+
+            writeToLog(signOutText)
+            writeToLog(signInText)
+
+            return jsonify({'success': True})
+
+    except Exception as e:
+        print("Error:", str(e))
+        return jsonify({'success': False})
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+@app.route('/sendManifest', methods=['POST'])
+def receiveManifest():
     if request.method == 'POST':
-        data: request.json
 
-        previousUser = data.get('previousUser')
-        currentUser = data.get('currentUser')
+        if 'textfile' in request.files:
+            uploaded_file = request.files['textfile']
 
-        signOutText = f"{previousUser} signs out"
-        signInText = f"{currentUser} signs in"
+            # Process the uploaded file as needed
+            if uploaded_file:
+                # Example: Save the uploaded file to a specific directory
+                uploaded_file.save('./manifest.txt')
 
-        writeToLog(signOutText)
-        writeToLog(signInText)
+                # You can also read the content of the file if needed
+                file_content = uploaded_file.read()
+                print("Received file content:", file_content)
 
-        return True
+                # Perform any additional processing on the file content here
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
 
 
 if __name__ == '__main__':
