@@ -11,7 +11,7 @@ class Cargo:
 
 class Cargo_Grid:
     # cargo_grid = [[Cargo] * 13] * 9
-    # made a smaller 2D array since manifest text file only has 8 slots rght now. Takes in 9 slots to fill the 3x3 portion of the array while ignoring zero row and zero column
+    # made a smaller 2D array since manifest text file only has 9 slots rght now. Takes in 9 slots to fill the 3x3 portion of the array while ignoring zero row and zero column
     # array_builder function works for any array size, just need to modify sizes of cargo grid
     cargo_grid = [[Cargo] * 4 for _ in range(4)]
 
@@ -112,4 +112,5 @@ cargo_grid.print()
 # print(num_to_string(cargo_grid.cargo_grid[2][3].position,
 # cargo_grid.cargo_grid[2][3].weight, cargo_grid.cargo_grid[2][3].name))
 
+# need to find a way to have the system either make a new text file or clear the original manifest
 cargo_grid.output_manifest("new1OUTBOUND.txt")
