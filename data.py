@@ -11,9 +11,9 @@ class Cargo:
 
 class Cargo_Grid:
     # cargo_grid = [[Cargo] * 13] * 9
-    # made a smaller 2D array since manifest text file only has eight slots rght now. Takes in 9 slots to fill the 3x3 portion of the array while ignoring zero row and zero column
+    # made a smaller 2D array since manifest text file only has 8 slots rght now. Takes in 9 slots to fill the 3x3 portion of the array while ignoring zero row and zero column
     # array_builder function works for any array size, just need to modify sizes of cargo grid
-    cargo_grid = [[Cargo] * 4] * 4
+    cargo_grid = [[Cargo] * 4 for _ in range(4)]
 
     def __init__(self, data):
         self.data = data
@@ -72,6 +72,18 @@ def conversion(position, weight):  # converts string data to numbers
     return [XY, cargo_weight]
 
 
+def num_to_string(position, weight, name):  # converts position and weight back to string
+    str_cargo = '[0' + str(position[0]) + ','
+    if (position[1] < 10):
+        str_cargo += '0' + str(position[1]) + "], {"
+    str_weight = str(weight)
+    for x in range(0, 5 - len(str_weight)):
+        str_cargo += '0'
+    str_cargo += str_weight + "}, " + name
+    print("done")
+    return str_cargo
+
+
 # set this equal to name of txt file. Might need to change this depending on how the frontend will send the text file to the backend
 manifest = "new1.txt"
 headers = ['Position', 'Weight', 'Cargo']
@@ -82,3 +94,6 @@ print(data)
 cargo_grid = Cargo_Grid(data)
 cargo_grid.array_builder()
 cargo_grid.print()
+
+print(num_to_string(cargo_grid.cargo_grid[2][3].position,
+                    cargo_grid.cargo_grid[2][3].weight, cargo_grid.cargo_grid[2][3].name))
