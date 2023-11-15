@@ -37,7 +37,7 @@ def conversion(position, weight):  # converts string data to numbers
 
 
 # set this equal to name of txt file. Might need to change this depending on how the frontend will send the text file to the backend
-manifest = "manifest.txt"
+manifest = "new1.txt"
 headers = ['Position', 'Weight', 'Cargo']
 data = pd.read_csv(manifest, sep=', ', names=headers, engine='python')
 print(data)
@@ -56,6 +56,8 @@ for x in cargo_grid:
     for y in x:
         if (y == 0):
             continue
+        if (i == 9):
+            break
         position_weight = conversion(
             data.at[i, 'Position'],  data.at[i, 'Weight'])
         y.name = data.at[i, 'Cargo']
