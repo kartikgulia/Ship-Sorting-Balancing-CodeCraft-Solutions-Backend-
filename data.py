@@ -9,6 +9,42 @@ class Cargo:
     name = "NAN"
 
 
+class Cargo_Grid:
+    # cargo_grid = [[Cargo] * 13] * 9
+    # made a smaller 2D array since manifest text file only has eight slots rght now. Takes in 9 slots to fill the 3x3 portion of the array while ignoring zero row and zero column
+    # array_builder function works for any array size, just need to modify sizes of cargo grid
+    cargo_grid = [[Cargo] * 4] * 4
+
+    def __init__(self, data):
+        self.data = data
+
+    def array_builder(self):
+        i = 0
+        for x in range(len(self.cargo_grid)):
+            if (x == 0):
+                continue
+            for y in range(len(self.cargo_grid[x])):
+                if (y == 0):
+                    continue
+                position_weight = conversion(
+                    self.data.at[i, 'Position'],  self.data.at[i, 'Weight'])
+                self.cargo_grid[x][y] = Cargo()
+                self.cargo_grid[x][y].name = self.data.at[i, 'Cargo']
+                self.cargo_grid[x][y].position = position_weight[0]
+                self.cargo_grid[x][y].weight = position_weight[1]
+                i += 1
+
+    def print(self):
+        for x in range(4):
+            if (x == 0):
+                continue
+            for y in range(4):
+                if (y == 0):
+                    continue
+                print(self.cargo_grid[x][y].name, " ",
+                      self.cargo_grid[x][y].position, " ",  self.cargo_grid[x][y].weight)
+
+
 def conversion(position, weight):  # converts string data to numbers
 
     x_position = position[1:3]  # getting x coord
@@ -42,27 +78,7 @@ headers = ['Position', 'Weight', 'Cargo']
 data = pd.read_csv(manifest, sep=', ', names=headers, engine='python')
 print(data)
 
-# cargo_grid = [[Cargo] * 13] * 9
-# made a smaller 2D array since manifest text file only has eight slots rght now. Takes in 9 slots to fill the 3x3 portion of the array while ignoring zero row and zero column
-cargo_grid = [[Cargo] * 4] * 4
 
-
-# had some issues with filling the regular 2D array with just eight values. Need to make a new text file that would fit all 8x12 slots (Might be a way to get python to generate a random manifest for us).
-# this algorithm basically fills the entire array. just need to change size in line of code above to the appropriate size once we have a proper manifest file to use.
-i = 0
-for x in cargo_grid:
-    if (x == 0):
-        continue
-    for y in x:
-        if (y == 0):
-            continue
-        if (i == 9):
-            break
-        position_weight = conversion(
-            data.at[i, 'Position'],  data.at[i, 'Weight'])
-        y.name = data.at[i, 'Cargo']
-        y.position = position_weight[0]
-        y.weight = position_weight[1]
-        print(y.name, " ",
-              y.position, " ", y.weight)
-        i += 1
+cargo_grid = Cargo_Grid(data)
+cargo_grid.array_builder()
+cargo_grid.print()
