@@ -45,7 +45,10 @@ class Cargo_Grid:
                       self.cargo_grid[x][y].position, " ",  self.cargo_grid[x][y].weight)
 
     # this function should be used when writing the updated cargo grid array back to the manifest
-    def output_manifest(self, file__name):
+    def output_manifest(self, file_name):
+        file = file_name
+        with open(file, "w") as file:
+            pass
         output = ""
         for x in range(len(self.cargo_grid)):
             if (x == 0):
@@ -56,7 +59,7 @@ class Cargo_Grid:
                 output += num_to_string(
                     self.cargo_grid[x][y].position, self.cargo_grid[x][y].weight, self.cargo_grid[x][y].name)
                 output += '\n'
-        with open(file__name, "w") as file:
+        with open(file_name, "w") as file:
             file.write(output)
 
 
@@ -112,5 +115,6 @@ cargo_grid.print()
 # print(num_to_string(cargo_grid.cargo_grid[2][3].position,
 # cargo_grid.cargo_grid[2][3].weight, cargo_grid.cargo_grid[2][3].name))
 
-# need to find a way to have the system either make a new text file or clear the original manifest
-cargo_grid.output_manifest("new1OUTBOUND.txt")
+# system can make its own textfile. just need to pass in the name you want the text file to have and it will create a new text file
+cargo_grid.output_manifest("newFile.txt")
+# cargo_grid.output_manifest("new1OUTBOUND.txt")
