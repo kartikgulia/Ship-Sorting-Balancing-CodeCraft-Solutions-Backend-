@@ -35,14 +35,29 @@ class Cargo_Grid:
                 i += 1
 
     def print(self):
-        for x in range(4):
+        for x in range(len(self.cargo_grid)):
             if (x == 0):
                 continue
-            for y in range(4):
+            for y in range(len(self.cargo_grid[x])):
                 if (y == 0):
                     continue
                 print(self.cargo_grid[x][y].name, " ",
                       self.cargo_grid[x][y].position, " ",  self.cargo_grid[x][y].weight)
+
+    # this function should be used when writing the updated cargo grid array back to the manifest
+    def output_manifest(self, file__name):
+        output = ""
+        for x in range(len(self.cargo_grid)):
+            if (x == 0):
+                continue
+            for y in range(len(self.cargo_grid[x])):
+                if (y == 0):
+                    continue
+                output += num_to_string(
+                    self.cargo_grid[x][y].position, self.cargo_grid[x][y].weight, self.cargo_grid[x][y].name)
+                output += '\n'
+        with open(file__name, "w") as file:
+            file.write(output)
 
 
 def conversion(position, weight):  # converts string data to numbers
@@ -80,7 +95,6 @@ def num_to_string(position, weight, name):  # converts position and weight back 
     for x in range(0, 5 - len(str_weight)):
         str_cargo += '0'
     str_cargo += str_weight + "}, " + name
-    print("done")
     return str_cargo
 
 
@@ -95,5 +109,7 @@ cargo_grid = Cargo_Grid(data)
 cargo_grid.array_builder()
 cargo_grid.print()
 
-print(num_to_string(cargo_grid.cargo_grid[2][3].position,
-                    cargo_grid.cargo_grid[2][3].weight, cargo_grid.cargo_grid[2][3].name))
+# print(num_to_string(cargo_grid.cargo_grid[2][3].position,
+# cargo_grid.cargo_grid[2][3].weight, cargo_grid.cargo_grid[2][3].name))
+
+cargo_grid.output_manifest("new1OUTBOUND.txt")
