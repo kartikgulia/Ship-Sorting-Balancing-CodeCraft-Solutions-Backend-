@@ -1,0 +1,7 @@
+run 
+
+pip install windowsOS_requirements.txt
+
+OR
+
+pip3 install macOS_requirements.txt
