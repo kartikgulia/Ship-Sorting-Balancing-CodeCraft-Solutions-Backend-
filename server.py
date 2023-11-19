@@ -107,11 +107,12 @@ def receiveManifest():
         else:
             return jsonify({'success': False})
 
+
 @app.route('/getGridInfo', methods=['GET'])
 def getManifestGrid():
     try:
-        
-        manifest_name : str = ""
+
+        manifest_name: str = ""
 
         with open("manifestName.txt", "r") as file:
             # Read the content of the file and store it in a variable
@@ -120,10 +121,10 @@ def getManifestGrid():
             # Print the value of the variable
             print("Manifest Name:", manifest_name)
 
-
         # Load the manifest file into a Pandas DataFrame
         headers = ['Position', 'Weight', 'Cargo']
-        pandasDF_for_Manifest = pd.read_csv(f'./{manifest_name}', sep=', ', names=headers, engine='python')
+        pandasDF_for_Manifest = pd.read_csv(
+            f'./{manifest_name}', sep=', ', names=headers, engine='python')
 
         # Initialize and populate the Cargo_Grid
         cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
