@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Test Flask Server</title>
-</head>
-<body>
-    <h1>Upload a Text File</h1>
-    <form action="http://127.0.0.1:5000/sendManifest" method="post" enctype="multipart/form-data">
-        <label for="textfile">Select a Text File:</label>
-        <input type="file" name="textfile" id="textfile" accept=".txt">
-        <br>
-        <input type="submit" value="Upload">
-    </form>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manifest Grid Display</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <h1>Manifest Grid</h1>
+    <button id="load-data-btn">Load Manifest Data</button>
+    <div id="grid-container"></div>
+  </body>
 </html>
