@@ -53,8 +53,8 @@ class Cargo_Grid:
     cargo_grid = [[Cargo] * 13 for _ in range(9)]
     buffer = [[Cargo] * 24 for _ in range(4)]
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, pandasDF_for_Manifest):
+        self.pandasDF_for_Manifest = pandasDF_for_Manifest
 
     # sets all positions
     def initial_array(self):
@@ -71,11 +71,11 @@ class Cargo_Grid:
 
     def array_builder(self):
         self.initial_array()
-        for x in range(len(self.data)):
+        for x in range(len(self.pandasDF_for_Manifest)):
             position_weight = conversion(
-                self.data.at[x, 'Position'],  self.data.at[x, 'Weight'])
+                self.pandasDF_for_Manifest.at[x, 'Position'],  self.pandasDF_for_Manifest.at[x, 'Weight'])
             pos = position_weight[0]
-            self.cargo_grid[pos[0]][pos[1]].name = self.data.at[x, 'Cargo']
+            self.cargo_grid[pos[0]][pos[1]].name = self.pandasDF_for_Manifest.at[x, 'Cargo']
             self.cargo_grid[pos[0]][pos[1]].position = pos
             self.cargo_grid[pos[0]][pos[1]].weight = position_weight[1]
 
@@ -108,16 +108,18 @@ class Cargo_Grid:
             file.write(output)
 
 
-# set this equal to name of txt file. Might need to change this depending on how the frontend will send the text file to the backend
-manifest = "new1.txt"
-headers = ['Position', 'Weight', 'Cargo']
-data = pd.read_csv(manifest, sep=', ', names=headers, engine='python')
-print(data)
+
+if __name__ == "__main__":
+    # set this equal to name of txt file. Might need to change this depending on how the frontend will send the text file to the backend
+    manifest = "new1.txt"
+    headers = ['Position', 'Weight', 'Cargo']
+    pandasDF_for_Manifest = pd.read_csv(manifest, sep=', ', names=headers, engine='python')
+    print(pandasDF_for_Manifest)
 
 
-cargo_grid = Cargo_Grid(data)
-cargo_grid.array_builder()
-cargo_grid.print()
+    cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+    cargo_grid.array_builder()
+    cargo_grid.print()
 
-# system can make its own textfile. just need to pass in the name you want the text file to have and it will create a new text file
-cargo_grid.output_manifest("newFile.txt")
+    # system can make its own textfile. just need to pass in the name you want the text file to have and it will create a new text file
+    cargo_grid.output_manifest("newFile.txt")
