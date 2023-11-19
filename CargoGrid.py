@@ -51,6 +51,7 @@ class Cargo:
 
 class Cargo_Grid:
     cargo_grid = [[Cargo] * 13 for _ in range(9)]
+    buffer = [[Cargo] * 24 for _ in range(4)]
 
     def __init__(self, data):
         self.data = data
