@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
-import re
+import pandas as pd
 import datetime
 import os
 from flask_cors import CORS
-import CargoGrid
+from CargoGrid import Cargo_Grid
 
 
 # Functions from other files
@@ -12,12 +12,7 @@ from writeToLog import writeToLog
 
 app = Flask(__name__)
 
-CORS(app, resources={
-    r"/data": {"origins": "*"},
-    r"/sendName": {"origins": "*"},
-    r"/signIn": {"origins": "*"},
-    r"/sendManifest": {"origins": "*"}
-})
+CORS(app)
 # python -m server run
 
 
@@ -113,5 +108,46 @@ def receiveManifest():
             return jsonify({'success': False})
 
 
+@app.route('/getGridInfo', methods=['GET'])
+def getManifestGrid():
+    try:
+
+        manifest_name: str = ""
+
+        with open("manifestName.txt", "r") as file:
+            # Read the content of the file and store it in a variable
+            manifest_name = file.read().strip()
+
+            # Print the value of the variable
+            print("Manifest Name:", manifest_name)
+
+        # Load the manifest file into a Pandas DataFrame
+        headers = ['Position', 'Weight', 'Cargo']
+        pandasDF_for_Manifest = pd.read_csv(
+            f'./{manifest_name}', sep=', ', names=headers, engine='python')
+
+        # Initialize and populate the Cargo_Grid
+        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+        cargo_grid.array_builder()
+
+        # Convert the Cargo_Grid to a JSON-serializable format
+        grid_data = []
+        for x in range(len(cargo_grid.cargo_grid)):
+            for y in range(len(cargo_grid.cargo_grid[x])):
+                cargo = cargo_grid.cargo_grid[x][y]
+                grid_data.append({
+                    "position": cargo.position,
+                    "weight": cargo.weight,
+                    "name": cargo.name
+                })
+
+        # Return the JSON data
+        return jsonify({'success': True, 'grid': grid_data})
+
+    except Exception as e:
+        print("Error:", str(e))
+        return jsonify({'success': False, 'message': str(e)})
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=5000)

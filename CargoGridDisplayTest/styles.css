@@ -1,0 +1,18 @@
+#grid-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); /* 12 columns */
+  grid-template-rows: repeat(8, 1fr); /* 8 rows */
+  gap: 10px;
+  width: 100%;
+  max-width: 600px; /* Adjust as needed */
+  margin: auto;
+}
+
+.grid-item {
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  text-align: center;
+}
