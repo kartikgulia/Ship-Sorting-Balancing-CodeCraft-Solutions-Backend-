@@ -4,7 +4,7 @@ import datetime
 import os
 from flask_cors import CORS
 from CargoGrid import Cargo_Grid
-from manifestAccess import getManifestGridHelper
+
 
 # Functions from other files
 from writeToLog import writeToLog
@@ -14,8 +14,6 @@ app = Flask(__name__)
 
 CORS(app)
 # python -m server run
-
-manifestFileNamePath = './ManifestInformation/manifestName.txt'
 
 
 @app.route("/")
@@ -33,6 +31,15 @@ def get_time():
         "Date": x,
         "programming": "python"
     }
+
+
+# @app.route('/sendName', methods=['POST'])
+# def send_name():
+#     if request.method == 'POST':
+#         data = request.json  # Assuming data is sent as JSON
+#         name = data.get('name')
+#         print("Received name:", name)
+#         return jsonify({'message': 'Name received successfully'})
 
 
 @app.route('/signin', methods=['POST'])
@@ -72,13 +79,10 @@ def receiveManifest():
         if request.files:
             uploaded_file = request.files['textfile']
 
-            old_manifest_name: str
-
             # Delete the old manifest if it exists
-            if os.path.exists(manifestFileNamePath):
-                with open(manifestFileNamePath, 'r') as name_file:
-                    old_manifest_name = f'./ManifestInformation/{
-                        name_file.read().strip()}'
+            if os.path.exists('./manifestName.txt'):
+                with open('./manifestName.txt', 'r') as name_file:
+                    old_manifest_name = name_file.read().strip()
                 if os.path.exists(f'./{old_manifest_name}'):
                     os.remove(f'./{old_manifest_name}')
 
@@ -87,10 +91,10 @@ def receiveManifest():
                 fileName = uploaded_file.filename
 
                 # Save the uploaded file to a specific directory
-                uploaded_file.save(f'./ManifestInformation/{fileName}')
+                uploaded_file.save(f'./{fileName}')
 
                 # Save the name of the uploaded file to "manifestName.txt"
-                with open(manifestFileNamePath, 'w') as name_file:
+                with open('./manifestName.txt', 'w') as name_file:
                     name_file.write(fileName)
 
                 # You can also read the content of the file if needed
@@ -110,14 +114,34 @@ def getManifestGrid():
 
         manifest_name: str = ""
 
-        with open(manifestFileNamePath, "r") as file:
+        with open("manifestName.txt", "r") as file:
             # Read the content of the file and store it in a variable
             manifest_name = file.read().strip()
 
             # Print the value of the variable
             print("Manifest Name:", manifest_name)
 
-        grid_data = getManifestGridHelper(manifest_name)
+        # Load the manifest file into a Pandas DataFrame
+        headers = ['Position', 'Weight', 'Cargo']
+        pandasDF_for_Manifest = pd.read_csv(
+            f'./{manifest_name}', sep=', ', names=headers, engine='python')
+
+        # Initialize and populate the Cargo_Grid
+        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+        cargo_grid.array_builder()
+
+        # Convert the Cargo_Grid to a JSON-serializable format
+        grid_data = []
+        for x in range(len(cargo_grid.cargo_grid)):
+            eachRow = []
+            for y in range(len(cargo_grid.cargo_grid[x])):
+                cargo = cargo_grid.cargo_grid[x][y]
+                eachRow.append({
+                    "position": cargo.position,
+                    "weight": cargo.weight,
+                    "name": cargo.name
+                })
+            grid_data.append(eachRow)
 
         # Return the JSON data
         return jsonify({'success': True, 'grid': grid_data})
