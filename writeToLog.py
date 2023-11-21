@@ -1,23 +1,28 @@
+import os
 import datetime
 
-
 def writeToLog(text: str):
-
     formattedDate = dateAndTimeForLog()
+    
+    # Specify the folder path
+    log_folder = "LogFolder"
 
-    messageForLog = f"{formattedDate}: {text}"
+    # Get the list of files in the LogFolder
+    files_in_folder = os.listdir(log_folder)
 
-    with open("Keogh2023.txt", "a") as file:
-        file.write(messageForLog + "\n")
+    # Check if there is exactly one file in the folder
+    if len(files_in_folder) == 1:
+        log_file = os.path.join(log_folder, files_in_folder[0])
 
+        with open(log_file, "a") as file:
+            file.write(f"{formattedDate}: {text}\n")
+    else:
+        print("There should be exactly one file in the LogFolder.")
 
 def dateAndTimeForLog() -> str:
     now = datetime.datetime.now()
-    # "Date": "Tue, 14 Nov 2023 11:50:05 GMT"
     formatted_date_time = now.strftime("%m/%d/%y: %H:%M")
-
     return formatted_date_time
-
 
 if __name__ == "__main__":
     writeToLog("John Smith signs out")
