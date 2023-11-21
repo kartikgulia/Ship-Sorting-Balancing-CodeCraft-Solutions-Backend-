@@ -6,3 +6,5 @@
 11/20/23: 22:14: Person1 signs in
 11/20/23: 22:14: Person1 signs out
 11/20/23: 22:14: Person2 signs in
+11/21/23: 11:19: Person2 signs out
+11/21/23: 11:19: Name signs in
