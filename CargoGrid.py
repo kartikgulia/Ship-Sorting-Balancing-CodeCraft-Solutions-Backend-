@@ -52,6 +52,7 @@ class Cargo:
 class Cargo_Grid:
     cargo_grid = [[Cargo] * 13 for _ in range(9)]
     buffer = [[Cargo] * 24 for _ in range(4)]
+    Manhattan_Dist = 0
 
     def __init__(self, pandasDF_for_Manifest):
         self.pandasDF_for_Manifest = pandasDF_for_Manifest
@@ -75,9 +76,38 @@ class Cargo_Grid:
             position_weight = conversion(
                 self.pandasDF_for_Manifest.at[x, 'Position'],  self.pandasDF_for_Manifest.at[x, 'Weight'])
             pos = position_weight[0]
-            self.cargo_grid[pos[0]][pos[1]].name = self.pandasDF_for_Manifest.at[x, 'Cargo']
+            self.cargo_grid[pos[0]][pos[1]
+                                    ].name = self.pandasDF_for_Manifest.at[x, 'Cargo']
             self.cargo_grid[pos[0]][pos[1]].position = pos
             self.cargo_grid[pos[0]][pos[1]].weight = position_weight[1]
+
+    def valid_pos(self, old_pos, new_pos):  # makes sure move is valid
+        x = new_pos[0]
+        y = new_pos[1]
+        # new position is already filled or is nan
+        if (self.cargo_grid[x][y].name != "UNUSED"):
+            return False
+        # new position has nothing beneath it to hold cargo and position below it is not the zero row or old position is beneath new position
+        if ((self.cargo_grid[x-1][y].name == "UNUSED" and (x-1 != 0)) or (y == old_pos[1] and x-1 == old_pos[0])):
+            return False
+        return True
+
+    # moves cargo to new positon and find manhattan distance. Used with valid_pos to make transfers
+    def change_pos(self, old_pos, new_pos):
+        old_row = old_pos[0]
+        old_column = old_pos[1]
+        new_row = new_pos[0]
+        new_column = new_pos[1]
+
+        if (self.valid_pos(old_pos, new_pos)):
+
+            self.Manhattan_Dist += abs(new_row - old_row) + \
+                abs(new_column - old_column)
+
+            self.cargo_grid[new_row][new_column].weight = self.cargo_grid[old_row][old_column].weight
+            self.cargo_grid[new_row][new_column].name = self.cargo_grid[old_row][old_column].name
+            self.cargo_grid[old_row][old_column].weight = 0
+            self.cargo_grid[old_row][old_column].name = "UNUSED"
 
     def print(self):
         for x in range(len(self.cargo_grid)):
@@ -107,18 +137,28 @@ class Cargo_Grid:
         with open(file_name, "w") as file:
             file.write(output)
 
+    def reverse_array(self):
+        self.cargo_grid = self.cargo_grid[::-1]
 
 
 if __name__ == "__main__":
     # set this equal to name of txt file. Might need to change this depending on how the frontend will send the text file to the backend
-    manifest = "new1.txt"
+    # manifest = "new1.txt"
+    manifest = "ManifestChristian.txt"
     headers = ['Position', 'Weight', 'Cargo']
-    pandasDF_for_Manifest = pd.read_csv(manifest, sep=', ', names=headers, engine='python')
+    pandasDF_for_Manifest = pd.read_csv(
+        manifest, sep=', ', names=headers, engine='python')
     print(pandasDF_for_Manifest)
-
 
     cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
     cargo_grid.array_builder()
+    # cargo_grid.print()
+
+    # test cases
+    cargo_grid.change_pos([1, 6], [2, 9])
+    print(cargo_grid.Manhattan_Dist)
+    cargo_grid.change_pos([2, 9], [2, 11])  # cannot work
+    cargo_grid.change_pos([2, 9], [1, 11])
     cargo_grid.print()
 
     # system can make its own textfile. just need to pass in the name you want the text file to have and it will create a new text file
