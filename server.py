@@ -7,8 +7,7 @@ from CargoGrid import Cargo_Grid
 
 
 # Functions from other files
-from writeToLog import writeToLog
-
+from signInHelper import signInHelper
 
 app = Flask(__name__)
 
@@ -49,18 +48,15 @@ def signIn() -> bool:
             data = request.json
 
             # Check if 'previousUser' and 'currentUser' keys are present in the JSON data
-            if 'previousUser' not in data or 'currentUser' not in data:
+            if 'currentUser' not in data:
                 raise ValueError(
-                    "Missing 'previousUser' or 'currentUser' in JSON data")
+                    "Missing  or 'currentUser' in JSON data")
 
-            previousUser = data['previousUser']
             currentUser = data['currentUser']
 
-            signOutText = f"{previousUser} signs out"
-            signInText = f"{currentUser} signs in"
-
-            writeToLog(signOutText)
-            writeToLog(signInText)
+            # Takes in current user and writes to log. 
+            # Also updates prev user to be current user
+            signInHelper(currentUser)
 
             return jsonify({'success': True})
 
@@ -166,6 +162,41 @@ def getManifestGrid():
     except Exception as e:
         print("Error:", str(e))
         return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/sendTransferInfo', methods=['POST'])
+
+def storeInfo():
+    if request.method == 'POST':
+        data = request.json
+        print(data)
+
+        # Directory where files will be stored
+        dir_path = 'ManifestInformation/TransferInformation'
+
+        # Ensure the directory exists
+        os.makedirs(dir_path, exist_ok=True)
+
+        # File paths
+        names_file_path = os.path.join(dir_path, 'initialTruckContainerNames.txt')
+        positions_file_path = os.path.join(dir_path, 'initialUnloadPositions.txt')
+
+        # Writing names to the file
+        with open(names_file_path, 'w') as names_file:
+            for name in data['selectedNames']:
+                names_file.write(name + '\n')
+
+        # Writing positions to the file
+        with open(positions_file_path, 'w') as positions_file:
+            for position in data['selectedPositions']:
+                line = f"{position['rowIndex']},{position['colIndex']}\n"
+                positions_file.write(line)
+
+        return jsonify({'success': True})
+
+    # Return a response for non-POST requests or in case of an error
+    return jsonify({'success': False, 'message': 'Invalid request method or error occurred'})
+
+
 
 
 if __name__ == '__main__':
