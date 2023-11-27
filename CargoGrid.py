@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib as plt
+import copy
 
 
 def conversion(position, weight):  # converts string data to numbers
@@ -54,6 +55,13 @@ class Cargo_Grid:
     buffer = [[Cargo] * 25 for _ in range(5)]
     Manhattan_Dist = 0
 
+    old_pos = [0, 0]  # use for opertions list
+    new_pos = [0, 0]  # use for operations list
+
+    starboardMass = 0
+    portSideMass = 0
+    Weight_Ratio = 0
+
     def __init__(self, pandasDF_for_Manifest):
         self.pandasDF_for_Manifest = pandasDF_for_Manifest
 
@@ -91,6 +99,29 @@ class Cargo_Grid:
             self.cargo_grid[pos[0]][pos[1]].position = pos
             self.cargo_grid[pos[0]][pos[1]].weight = position_weight[1]
 
+        self.Weight_Calc()  # get weights for starboard and portside
+
+    def Weight_Calc(self):  # sets weights for starboard and portside
+        for x in range(len(self.cargo_grid)):
+            if (x == 0):
+                continue
+            for y in range(len(self.cargo_grid[x])):
+                if (y == 0):
+                    continue
+                if (y < 7):
+                    self.portSideMass += self.cargo_grid[x][y].weight
+                else:
+                    self.starboardMass += self.cargo_grid[x][y].weight
+        self.Weight_Ratio = min(self.portSideMass, self.starboardMass) / \
+            max(self.starboardMass, self.portSideMass)
+
+    def Balance_Check(self):
+        # if (abs(self.starboardMass - self.portSideMass) <= (max(self.starboardMass, self.portSideMass) * 0.10)):
+        if (self.Weight_Ratio > 0.9):
+            return True
+        else:
+            return False
+
     def valid_pos(self, old_pos, new_pos):  # makes sure move is valid
         x = new_pos[0]
         y = new_pos[1]
@@ -106,8 +137,12 @@ class Cargo_Grid:
         else:
             return True
 
-    # moves cargo to new positon and find manhattan distance. Used with valid_pos to make transfers
+    # moves cargo to new positon and find manhattan distance and weights of starboard and portside. Used with valid_pos to make transfers
     def change_pos(self, old_pos, new_pos):
+
+        self.old_pos = old_pos
+        self.new_pos = new_pos
+
         old_row = old_pos[0]
         old_column = old_pos[1]
         new_row = new_pos[0]
@@ -123,7 +158,17 @@ class Cargo_Grid:
             self.cargo_grid[old_row][old_column].weight = 0
             self.cargo_grid[old_row][old_column].name = "UNUSED"
 
-        return self.cargo_grid  # want to make a tree with multiple states for cargo grid
+            if (new_column < 7):
+                self.portSideMass += self.cargo_grid[new_row][new_column].weight
+                self.starboardMass -= self.cargo_grid[new_row][new_column].weight
+            else:
+                self.portSideMass -= self.cargo_grid[new_row][new_column].weight
+                self.starboardMass += self.cargo_grid[new_row][new_column].weight
+
+            self.Weight_Ratio = min(self.portSideMass, self.starboardMass) / \
+                max(self.starboardMass, self.portSideMass)
+            # want to make a tree with multiple states for cargo grid
+            # return copy.deepcopy(self.cargo_grid)
 
     def print(self):
         for x in range(len(self.cargo_grid)):
@@ -161,7 +206,7 @@ if __name__ == "__main__":
     headers = ['Position', 'Weight', 'Cargo']
     pandasDF_for_Manifest = pd.read_csv(
         manifest, sep=', ', names=headers, engine='python')
-    # print(pandasDF_for_Manifest)
+    print(pandasDF_for_Manifest)
 
     cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
     cargo_grid.array_builder()
@@ -169,10 +214,12 @@ if __name__ == "__main__":
 
     # test cases
     cargo_grid.change_pos([1, 9], [2, 8])
-    print(cargo_grid.Manhattan_Dist)
+    # print(cargo_grid.Manhattan_Dist)
     cargo_grid.change_pos([2, 8], [2, 4])
     cargo_grid.change_pos([2, 4], [2, 6])
-    cargo_grid.print()
+    print(str(cargo_grid.starboardMass) +
+          " " + str(cargo_grid.portSideMass))
+    print(str(cargo_grid.Weight_Ratio))
 
     # system can make its own textfile. just need to pass in the name you want the text file to have and it will create a new text file
     cargo_grid.output_manifest("newFile.txt")
