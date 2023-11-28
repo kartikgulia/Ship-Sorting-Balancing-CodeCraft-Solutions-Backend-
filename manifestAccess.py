@@ -2,10 +2,17 @@ from typing import List, Dict, Any
 import pandas as pd
 
 from CargoGrid import Cargo_Grid
+import os
+
+pathToManifestNameTextFile = "ManifestInformation/manifestName.txt"
 
 
 def getManifestName():
-    print()
+    if os.path.exists(pathToManifestNameTextFile):
+        with open(pathToManifestNameTextFile, 'r') as name_file:
+            old_manifest_name = name_file.read().strip()
+
+    return old_manifest_name
 
 
 def getManifestGridHelper(manifest_name) -> List[Dict[str, Any]]:
@@ -29,3 +36,6 @@ def getManifestGridHelper(manifest_name) -> List[Dict[str, Any]]:
             })
 
     return grid_data
+
+
+print(getManifestName())

@@ -3,6 +3,7 @@ from CargoGrid import Cargo_Grid
 import copy
 import pandas as pd
 
+from manifestAccess import getManifestName
 # TODO: sift, writing to log, operations list, animation.
 
 
@@ -76,11 +77,13 @@ class Balance:
                             cargo.position, self.CargoGrid.lowestPosition(column))
                         self.nodeList.append(cargoNode)
                 self.nodeList = sorted(
-                    self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)  # sort node list by how large weight ratio is
+                    # sort node list by how large weight ratio is
+                    self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)
                 self.CargoGrid.Grid_Copy(  # set cargo grid to grid wth largest weight ratio
                     self.nodeList[0])
 
-                output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({
+                    str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
                 self.ProgressionList.append(
                     self.nodeList[0])
                 # check if new cargo grid is balanced
@@ -93,18 +96,14 @@ class Balance:
             return  # not sure what to do if its already balanced
 
 
-manifest = "BalanceTest.txt"
+manifest = f"./ManifestInformation/{getManifestName()}"
 headers = ['Position', 'Weight', 'Cargo']
 pandasDF_for_Manifest = pd.read_csv(
     manifest, sep=', ', names=headers, engine='python')
-# print(pandasDF_for_Manifest)
-
 cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
 cargo_grid.array_builder()
 cargo_grid.print()
 balance = Balance(cargo_grid)
-# balance.CargoList()
-# print(balance.cargoList)
 balance.Balance("Balance.txt")
 balance.CargoGrid.print()
 
