@@ -52,10 +52,10 @@ class Cargo:
 
 class Cargo_Grid:
     cargo_grid = [[Cargo] * 13 for _ in range(9)]
-    buffer = [[Cargo] * 25 for _ in range(5)]
+    # buffer = [[Cargo] * 25 for _ in range(5)]
     Manhattan_Dist = 0
 
-    old_pos = [0, 0]  # use for opertions list
+    old_pos = [0, 0]  # use for operations list
     new_pos = [0, 0]  # use for operations list
 
     starboardMass = 0
@@ -65,8 +65,18 @@ class Cargo_Grid:
     def __init__(self, pandasDF_for_Manifest):
         self.pandasDF_for_Manifest = pandasDF_for_Manifest
 
-    # sets all positions for grid and buffer
-    def initial_array(self):
+    def __getitem__(self, index):
+        if isinstance(index, tuple):
+            x, y = index
+            return self.cargo_grid[x][y]
+        elif isinstance(index, int):
+            x = index
+            return self.cargo_grid[x]
+        elif index is None:
+            return self.cargo_grid
+
+    def initial_array(self):  # sets all positions for grid and buffer
+
         i = 0
         for x in range(len(self.cargo_grid)):
             if (x == 0):
@@ -77,6 +87,7 @@ class Cargo_Grid:
                 self.cargo_grid[x][y] = Cargo()
                 self.cargo_grid[x][y].position = [x, y]
                 i += 1
+        """
         i = 0
         for x in range(len(self.buffer)):
             if (x == 0):
@@ -87,6 +98,7 @@ class Cargo_Grid:
                 self.buffer[x][y] = Cargo()
                 self.buffer[x][y].position = [x, y]
                 i += 1
+        """
 
     def array_builder(self):
         self.initial_array()
@@ -100,6 +112,29 @@ class Cargo_Grid:
             self.cargo_grid[pos[0]][pos[1]].weight = position_weight[1]
 
         self.Weight_Calc()  # get weights for starboard and portside
+
+    def Grid_Copy(self, grid):
+        """
+        for x in range(len(grid.cargo_grid)):
+            if (x == 0):
+                continue
+            for y in range(len(grid.cargo_grid[x])):
+                if (y == 0):
+                    continue
+
+                self.cargo_grid[x][y].name = copy.deepcopy(grid.cargo_grid[x][y].name)
+                self.cargo_grid[x][y].position = copy.deegrid.cargo_grid[x][y].position
+                self.cargo_grid[x][y].weight = grid.cargo_grid[x][y].weight
+
+                self.cargo_grid[x][y] = copy.deepcopy(grid.cargo_grid[x][y])
+        """
+        self.cargo_grid = copy.deepcopy(grid.cargo_grid)
+        self.Manhattan_Dist = grid.Manhattan_Dist
+        self.portSideMass = grid.portSideMass
+        self.starboardMass = grid.starboardMass
+        self.Weight_Ratio = grid.Weight_Ratio
+        self.old_pos = grid.old_pos
+        self.new_pos = grid.new_pos
 
     def Weight_Calc(self):  # sets weights for starboard and portside
         for x in range(len(self.cargo_grid)):
@@ -121,6 +156,20 @@ class Cargo_Grid:
             return True
         else:
             return False
+
+    # want to get lowest position we can place cargo in for a given column
+    def lowestPosition(self, column):
+        """
+        for col in range(1, len(self.cargo_grid[0])):
+            if (col == column):
+                for row in range(1, len(self.cargo_grid)):
+                    if (self.cargo_grid[row][col].name == "UNUSED"):
+                        return [row, col]
+        """
+        cargo_column = [row[column] for row in self.cargo_grid]
+        for x in range(1, len(cargo_column)):
+            if (cargo_column[x].name == "UNUSED"):
+                return cargo_column[x].position
 
     def valid_pos(self, old_pos, new_pos):  # makes sure move is valid
         x = new_pos[0]
@@ -168,7 +217,7 @@ class Cargo_Grid:
             self.Weight_Ratio = min(self.portSideMass, self.starboardMass) / \
                 max(self.starboardMass, self.portSideMass)
             # want to make a tree with multiple states for cargo grid
-            # return copy.deepcopy(self.cargo_grid)
+            # return copy.deepcopy(self)
 
     def print(self):
         for x in range(len(self.cargo_grid)):
@@ -220,6 +269,7 @@ if __name__ == "__main__":
     print(str(cargo_grid.starboardMass) +
           " " + str(cargo_grid.portSideMass))
     print(str(cargo_grid.Weight_Ratio))
+    print(str(cargo_grid.lowestPosition(8)))
 
     # system can make its own textfile. just need to pass in the name you want the text file to have and it will create a new text file
     cargo_grid.output_manifest("newFile.txt")
