@@ -10,17 +10,20 @@ from manifestAccess import getManifestName
 class Balance:
     # starboardMass = 0
     # portSideMass = 0
-    cargoList = []  # list of containers on the heavier side
-    nodeList = []  # list of states in search tree
-    # might be able to use this for animation. stores the path of states to reach output
-    ProgressionList = []
+    # cargoList = []  # list of containers on the heavier side
+    # nodeList = []  # list of states in search tree
+    # # might be able to use this for animation. stores the path of states to reach output
+    # ProgressionList = []
     # portSideList = []
     # starBoardList = []
 
     def __init__(self, CargoGrid):  # initial state
         # cargo grid object should have already read in manifest and called array_builder
         self.CargoGrid = CargoGrid
-
+        self.cargoList = []  # list of containers on the heavier side
+        self.nodeList = []  # list of states in search tree
+        # might be able to use this for animation. stores the path of states to reach output
+        self.ProgressionList = []
     def CargoList(self):
         for x in range(len(self.CargoGrid.cargo_grid)):
             if (x == 0):
@@ -55,42 +58,37 @@ class Balance:
     """
 
     def Balance(self, filename):
-        # start = 0
-        # stop = 0
-
-        if (self.CargoGrid.Balance_Check() == False):
+        if not self.CargoGrid.Balance_Check():
             balanced = False
-            with open(filename, "w") as file:
-                pass
-                output = ""
+            output = ""
+            
+            # Initialize ProgressionList at the beginning of each balance operation
             self.ProgressionList.append(self.CargoGrid.cargo_grid)
-            # if ship container is unbalanced, make a list of all containers
-            self.CargoList()
-            while (balanced == False):
-                # cargo we put crane over. goes from top row to bottom row, right to left
-                for cargo in reversed(self.cargoList):
-                    for column in range(1, 13):  # column we drop cargo off at
-                        cargoNode = Cargo_Grid(
-                            self.CargoGrid.pandasDF_for_Manifest)
-                        cargoNode.Grid_Copy(self.CargoGrid)
-                        cargoNode.change_pos(
-                            cargo.position, self.CargoGrid.lowestPosition(column))
-                        self.nodeList.append(cargoNode)
-                self.nodeList = sorted(
-                    # sort node list by how large weight ratio is
-                    self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)
-                self.CargoGrid.Grid_Copy(  # set cargo grid to grid wth largest weight ratio
-                    self.nodeList[0])
 
-                output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({
-                    str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
-                self.ProgressionList.append(
-                    self.nodeList[0])
-                # check if new cargo grid is balanced
-                if (self.CargoGrid.Balance_Check() == True):
-                    with open(filename, "w") as file:  # output operations list
+            self.CargoList()
+
+            while not balanced:
+                for cargo in reversed(self.cargoList):
+                    for column in range(1, 13):
+                        cargoNode = Cargo_Grid(self.CargoGrid.pandasDF_for_Manifest)
+                        cargoNode.Grid_Copy(self.CargoGrid)
+                        cargoNode.change_pos(cargo.position, self.CargoGrid.lowestPosition(column))
+                        self.nodeList.append(cargoNode)
+
+                self.nodeList = sorted(self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)
+                self.CargoGrid.Grid_Copy(self.nodeList[0])
+
+                output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                self.ProgressionList.append(self.nodeList[0])
+
+                if self.CargoGrid.Balance_Check():
+                    with open(filename, "w") as file:
                         file.write(output)
                     balanced = True
+                    self.cargoList.clear()
+                    self.nodeList.clear()
+                    self.ProgressionList.clear()
+
 
         else:  # already balanced
             return  # not sure what to do if its already balanced

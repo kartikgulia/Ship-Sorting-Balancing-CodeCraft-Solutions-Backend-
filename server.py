@@ -197,13 +197,16 @@ def returnBalanceInfo():
             manifestName, sep=', ', names=headers, engine='python')
         cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
         cargo_grid.array_builder()
-        cargo_grid.print()
+        # cargo_grid.print()
         balance = Balance(cargo_grid)
         balance.Balance("./ManifestInformation/Balance.txt")
         # balance.CargoGrid.print()
         progressionList = balance.ProgressionList
 
         moves = parse_balance_file("./ManifestInformation/Balance.txt")
+
+        with open("./ManifestInformation/Balance.txt", "w") as balance_file:
+            balance_file.truncate(0)  # This will remove all text from the file
         return jsonify({'manifestGrids': "progressionList", "listOfMoves": moves})
 
 
