@@ -11,6 +11,7 @@ from signInHelper import signInHelper
 from manifestAccess import getManifestName
 from Balance import Balance
 
+from helpers import parse_balance_file
 app = Flask(__name__)
 
 CORS(app)
@@ -202,7 +203,8 @@ def returnBalanceInfo():
         # balance.CargoGrid.print()
         progressionList = balance.ProgressionList
 
-        return jsonify({'listOfOperations': progressionList})
+        moves = parse_balance_file("./ManifestInformation/Balance.txt")
+        return jsonify({'manifestGrids': "progressionList", "listOfMoves": moves})
 
 
 if __name__ == '__main__':

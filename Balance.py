@@ -57,10 +57,10 @@ class Balance:
     def Balance(self, filename):
         # start = 0
         # stop = 0
-        file = filename
+
         if (self.CargoGrid.Balance_Check() == False):
             balanced = False
-            with open(file, "w") as file:
+            with open(filename, "w") as file:
                 pass
                 output = ""
             self.ProgressionList.append(self.CargoGrid.cargo_grid)
@@ -96,16 +96,16 @@ class Balance:
             return  # not sure what to do if its already balanced
 
 
-manifest = f"./ManifestInformation/{getManifestName()}"
-headers = ['Position', 'Weight', 'Cargo']
-pandasDF_for_Manifest = pd.read_csv(
-    manifest, sep=', ', names=headers, engine='python')
-cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
-cargo_grid.array_builder()
-cargo_grid.print()
-balance = Balance(cargo_grid)
-balance.Balance("Balance.txt")
-balance.CargoGrid.print()
+# manifest = f"./ManifestInformation/{getManifestName()}"
+# headers = ['Position', 'Weight', 'Cargo']
+# pandasDF_for_Manifest = pd.read_csv(
+#     manifest, sep=', ', names=headers, engine='python')
+# cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+# cargo_grid.array_builder()
+# cargo_grid.print()
+# balance = Balance(cargo_grid)
+# balance.Balance("Balance.txt")
+# balance.CargoGrid.print()
 
 
 """
