@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import pandas as pd
 import datetime
 import os
@@ -10,7 +10,7 @@ from CargoGrid import Cargo_Grid
 from signInHelper import signInHelper
 from manifestAccess import getManifestName
 from Balance import Balance
-
+from writeToLog import getLogFileName
 from helpers import parse_balance_file
 app = Flask(__name__)
 
@@ -208,6 +208,19 @@ def returnBalanceInfo():
         with open("./ManifestInformation/Balance.txt", "w") as balance_file:
             balance_file.truncate(0)  # This will remove all text from the file
         return jsonify({'manifestGrids': "progressionList", "listOfMoves": moves})
+
+
+@app.route('/downloadLog', methods=['GET'])
+def downloadLog():
+    log_file = getLogFileName()
+    log_filename = os.path.basename(log_file)
+    
+    if os.path.exists(log_file):
+        response = send_file(log_file, as_attachment=True)
+        response.headers['Content-Disposition'] = 'attachment; filename=\"{}\"'.format(log_filename)
+        return response
+    else:
+        return jsonify({'success': False, 'message': 'Log file not found'})
 
 
 if __name__ == '__main__':
