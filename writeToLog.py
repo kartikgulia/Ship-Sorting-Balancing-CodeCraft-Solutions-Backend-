@@ -1,6 +1,20 @@
 import os
 import datetime
 
+def getLogFileName(): 
+    log_file  : str
+
+    log_folder = "LogFolder"
+
+    # Get the list of files in the LogFolder
+    files_in_folder = os.listdir(log_folder)
+
+    # Check if there is exactly one file in the folder
+    if len(files_in_folder) == 1:
+        log_file = os.path.join(log_folder, files_in_folder[0])
+
+    return log_file
+
 def writeToLog(text: str):
     formattedDate = dateAndTimeForLog()
     

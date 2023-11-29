@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import pandas as pd
 import datetime
 import os
@@ -8,7 +8,10 @@ from CargoGrid import Cargo_Grid
 
 # Functions from other files
 from signInHelper import signInHelper
-
+from manifestAccess import getManifestName
+from Balance import Balance
+from writeToLog import getLogFileName
+from helpers import parse_balance_file
 app = Flask(__name__)
 
 CORS(app)
@@ -32,15 +35,6 @@ def get_time():
     }
 
 
-# @app.route('/sendName', methods=['POST'])
-# def send_name():
-#     if request.method == 'POST':
-#         data = request.json  # Assuming data is sent as JSON
-#         name = data.get('name')
-#         print("Received name:", name)
-#         return jsonify({'message': 'Name received successfully'})
-
-
 @app.route('/signin', methods=['POST'])
 def signIn() -> bool:
     try:
@@ -54,7 +48,7 @@ def signIn() -> bool:
 
             currentUser = data['currentUser']
 
-            # Takes in current user and writes to log. 
+            # Takes in current user and writes to log.
             # Also updates prev user to be current user
             signInHelper(currentUser)
 
@@ -66,6 +60,8 @@ def signIn() -> bool:
 
 
 pathToManifestNameTextFile = "ManifestInformation/manifestName.txt"
+
+
 @app.route('/sendManifest', methods=['POST'])
 def receiveManifest():
     # This function does a couple of things:
@@ -77,11 +73,10 @@ def receiveManifest():
             uploaded_file = request.files['textfile']
 
             # Delete the old manifest if it exists
-            if os.path.exists(pathToManifestNameTextFile):
-                with open(pathToManifestNameTextFile, 'r') as name_file:
-                    old_manifest_name = name_file.read().strip()
-                if os.path.exists(f'./ManifestInformation/{old_manifest_name}'):
-                    os.remove(f'./ManifestInformation/{old_manifest_name}')
+            old_manifest_name = getManifestName()
+
+            if os.path.exists(f'./ManifestInformation/{old_manifest_name}'):
+                os.remove(f'./ManifestInformation/{old_manifest_name}')
 
             # Process the uploaded file as needed
             if uploaded_file:
@@ -96,7 +91,7 @@ def receiveManifest():
 
                 # You can also read the content of the file if needed
                 file_content = uploaded_file.read()
-                print("Received file content:", file_content)
+                # print("Received file content:", file_content)
 
                 # Perform any additional processing on the file content here
 
@@ -109,14 +104,10 @@ def receiveManifest():
 def getManifestGrid():
     try:
 
-        manifest_name: str = ""
+        manifest_name: str = getManifestName()
 
-        with open(pathToManifestNameTextFile, "r") as file:
-            # Read the content of the file and store it in a variable
-            manifest_name = file.read().strip()
-
-            # Print the value of the variable
-            print("Manifest Name:", manifest_name)
+        # Print the value of the variable
+        print("Manifest Name:", manifest_name)
 
         # Load the manifest file into a Pandas DataFrame
         headers = ['Position', 'Weight', 'Cargo']
@@ -138,23 +129,19 @@ def getManifestGrid():
                 cargo = cargo_grid.cargo_grid[eachRow][eachCol]
 
                 position = cargo.position
-                print(position)
+                # print(position)
 
-                if position == [0,0]:
+                if position == [0, 0]:
                     continue
-                    
+
                 rowNum = 8 - position[0]
                 colNum = position[1] - 1
 
                 grid_data[rowNum][colNum] = {
-                    "position" : cargo.position,
-                    "name" : cargo.name,
-                    "weight" : cargo.weight
+                    "position": cargo.position,
+                    "name": cargo.name,
+                    "weight": cargo.weight
                 }
-
-
-                
-            
 
         # Return the JSON data
         return jsonify({'success': True, 'grid': grid_data})
@@ -163,12 +150,12 @@ def getManifestGrid():
         print("Error:", str(e))
         return jsonify({'success': False, 'message': str(e)})
 
-@app.route('/sendTransferInfo', methods=['POST'])
 
+@app.route('/sendTransferInfo', methods=['POST'])
 def storeInfo():
     if request.method == 'POST':
         data = request.json
-        print(data)
+        # print(data)
 
         # Directory where files will be stored
         dir_path = 'ManifestInformation/TransferInformation'
@@ -177,8 +164,10 @@ def storeInfo():
         os.makedirs(dir_path, exist_ok=True)
 
         # File paths
-        names_file_path = os.path.join(dir_path, 'initialTruckContainerNames.txt')
-        positions_file_path = os.path.join(dir_path, 'initialUnloadPositions.txt')
+        names_file_path = os.path.join(
+            dir_path, 'initialTruckContainerNames.txt')
+        positions_file_path = os.path.join(
+            dir_path, 'initialUnloadPositions.txt')
 
         # Writing names to the file
         with open(names_file_path, 'w') as names_file:
@@ -197,6 +186,41 @@ def storeInfo():
     return jsonify({'success': False, 'message': 'Invalid request method or error occurred'})
 
 
+@app.route('/balance', methods=['GET'])
+def returnBalanceInfo():
+
+    if request.method == 'GET':
+
+        manifestName = f"./ManifestInformation/{getManifestName()}"
+        headers = ['Position', 'Weight', 'Cargo']
+        pandasDF_for_Manifest = pd.read_csv(
+            manifestName, sep=', ', names=headers, engine='python')
+        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+        cargo_grid.array_builder()
+        # cargo_grid.print()
+        balance = Balance(cargo_grid)
+        balance.Balance("./ManifestInformation/Balance.txt")
+        # balance.CargoGrid.print()
+        progressionList = balance.ProgressionList
+
+        moves = parse_balance_file("./ManifestInformation/Balance.txt")
+
+        with open("./ManifestInformation/Balance.txt", "w") as balance_file:
+            balance_file.truncate(0)  # This will remove all text from the file
+        return jsonify({'manifestGrids': "progressionList", "listOfMoves": moves})
+
+
+@app.route('/downloadLog', methods=['GET'])
+def downloadLog():
+    log_file = getLogFileName()
+    log_filename = os.path.basename(log_file)
+    
+    if os.path.exists(log_file):
+        response = send_file(log_file, as_attachment=True)
+        response.headers['Content-Disposition'] = 'attachment; filename=\"{}\"'.format(log_filename)
+        return response
+    else:
+        return jsonify({'success': False, 'message': 'Log file not found'})
 
 
 if __name__ == '__main__':

@@ -1,0 +1,2 @@
+Move cargo from (1,4) to (1,7)
+Move cargo from (1,9) to (4,1)
