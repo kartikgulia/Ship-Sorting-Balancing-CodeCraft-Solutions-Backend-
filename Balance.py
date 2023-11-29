@@ -27,14 +27,20 @@ class Balance:
                     self.cargoList.append(self.CargoGrid.cargo_grid[x][y])
 
     def Balance(self, filename):
+        i = 0  # keeps track of what move we are on
         if not self.CargoGrid.Balance_Check():
             balanced = False
             output = ""
             # Initialize ProgressionList at the beginning of each balance operation
-            self.ProgressionList.append(self.CargoGrid.cargo_grid)
+            # self.ProgressionList.append(self.CargoGrid.cargo_grid)
+
+            # outputs manifest of initial state
+            self.CargoGrid.output_progression(i)
             self.CargoList()
             while not balanced:
+                i += 1
                 for cargo in reversed(self.cargoList):
+
                     for column in range(1, 13):  # column we drop cargo off at
                         cargoNode = Cargo_Grid(
                             self.CargoGrid.pandasDF_for_Manifest)
@@ -42,13 +48,15 @@ class Balance:
                         cargoNode.change_pos(
                             cargo.position, self.CargoGrid.lowestPosition(column))
                         self.nodeList.append(cargoNode)
+
                 self.nodeList = sorted(
                     self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)  # sort node list by how large weight ratio is
                 self.CargoGrid.Grid_Copy(  # set cargo grid to grid wth largest weight ratio
                     self.nodeList[0])
-
+                # outputs manifest of each move
+                self.CargoGrid.output_progression(i)
                 output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
-                self.ProgressionList.append(self.nodeList[0])
+                # self.ProgressionList.append(self.nodeList[0])
 
                 if self.CargoGrid.Balance_Check():
                     with open(filename, "w") as file:

@@ -1,7 +1,6 @@
 import pandas as pd
-import numpy as np
-import matplotlib as plt
 import copy
+import os
 
 
 def conversion(position, weight):  # converts string data to numbers
@@ -114,20 +113,6 @@ class Cargo_Grid:
         self.Weight_Calc()  # get weights for starboard and portside
 
     def Grid_Copy(self, grid):
-        """
-        for x in range(len(grid.cargo_grid)):
-            if (x == 0):
-                continue
-            for y in range(len(grid.cargo_grid[x])):
-                if (y == 0):
-                    continue
-
-                self.cargo_grid[x][y].name = copy.deepcopy(grid.cargo_grid[x][y].name)
-                self.cargo_grid[x][y].position = copy.deegrid.cargo_grid[x][y].position
-                self.cargo_grid[x][y].weight = grid.cargo_grid[x][y].weight
-
-                self.cargo_grid[x][y] = copy.deepcopy(grid.cargo_grid[x][y])
-        """
         self.cargo_grid = copy.deepcopy(grid.cargo_grid)
         self.Manhattan_Dist = grid.Manhattan_Dist
         self.portSideMass = grid.portSideMass
@@ -159,13 +144,6 @@ class Cargo_Grid:
 
     # want to get lowest position we can place cargo in for a given column
     def lowestPosition(self, column):
-        """
-        for col in range(1, len(self.cargo_grid[0])):
-            if (col == column):
-                for row in range(1, len(self.cargo_grid)):
-                    if (self.cargo_grid[row][col].name == "UNUSED"):
-                        return [row, col]
-        """
         cargo_column = [row[column] for row in self.cargo_grid]
         for x in range(1, len(cargo_column)):
             if (cargo_column[x].name == "UNUSED"):
@@ -245,6 +223,27 @@ class Cargo_Grid:
                     self.cargo_grid[x][y].position, self.cargo_grid[x][y].weight, self.cargo_grid[x][y].name)
                 output += '\n'
         with open(file_name, "w") as file:
+            file.write(output)
+
+    # outputs manifest for each move in path to final state
+    def output_progression(self, i):
+        folder = 'ManifestForEachMove'
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        output = ""
+        for x in range(len(self.cargo_grid)):
+            if (x == 0):
+                continue
+            for y in range(len(self.cargo_grid[x])):
+                if (y == 0):
+                    continue
+                output += num_to_string(
+                    self.cargo_grid[x][y].position, self.cargo_grid[x][y].weight, self.cargo_grid[x][y].name)
+                output += '\n'
+
+        text_file = 'ManifestMove' + str(i)
+        file_path = os.path.join(folder, text_file)
+        with open(file_path, "w") as file:
             file.write(output)
 
 
