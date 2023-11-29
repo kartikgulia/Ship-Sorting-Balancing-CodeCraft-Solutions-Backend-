@@ -7,14 +7,10 @@ import pandas as pd
 
 
 class Balance:
-    # starboardMass = 0
-    # portSideMass = 0
     cargoList = []  # list of containers on the heavier side
     nodeList = []  # list of states in search tree
     # might be able to use this for animation. stores the path of states to reach output
     ProgressionList = []
-    # portSideList = []
-    # starBoardList = []
 
     def __init__(self, CargoGrid):  # initial state
         # cargo grid object should have already read in manifest and called array_builder
@@ -27,31 +23,10 @@ class Balance:
             for y in range(len(self.CargoGrid.cargo_grid[x])):
                 if (y == 0):
                     continue
-                """
-                if (y < 7):
-                    if (self.CargoGrid.cargo_grid[x][y].name != "NAN" and self.CargoGrid.cargo_grid[x][y].name != "UNUSED"):
-                        self.portSideList.append(
-                            self.CargoGrid.cargo_grid[x][y])
-                if (y > 6):
-                    if (self.CargoGrid.cargo_grid[x][y].name != "NAN" and self.CargoGrid.cargo_grid[x][y].name != "UNUSED"):
-                        self.starBoardList.append(
-                            self.CargoGrid.cargo_grid[x][y])
-                """
                 if (self.CargoGrid.cargo_grid[x][y].name != "NAN" and self.CargoGrid.cargo_grid[x][y].name != "UNUSED"):
                     self.cargoList.append(self.CargoGrid.cargo_grid[x][y])
 
     # want to get lowest position we can place cargo in for a given column
-
-    """
-
-    def lowestPosition(self, CargoGrid, column):
-        if (CargoGrid.cargo_grid[1][column].name == "UNUSED"):
-            return [1, column]
-        cargo_column = [row[column] for row in CargoGrid.cargo_grid]
-        for x in range(1, len(cargo_column)):
-            if (cargo_column[x].name == "UNUSED"):
-                return CargoGrid.cargo_grid[x][column].position
-    """
 
     def Balance(self, filename):
         # start = 0
@@ -79,7 +54,6 @@ class Balance:
                     self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)  # sort node list by how large weight ratio is
                 self.CargoGrid.Grid_Copy(  # set cargo grid to grid wth largest weight ratio
                     self.nodeList[0])
-
                 output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
                 self.ProgressionList.append(
                     self.nodeList[0])
@@ -87,7 +61,7 @@ class Balance:
                 if (self.CargoGrid.Balance_Check() == True):
                     with open(filename, "w") as file:  # output operations list
                         file.write(output)
-                    balanced = True
+                    balanced = True  # cargo grid object should now have a cargo array that is balanced
 
         else:  # already balanced
             return  # not sure what to do if its already balanced
@@ -107,52 +81,3 @@ balance = Balance(cargo_grid)
 # print(balance.cargoList)
 balance.Balance("Balance.txt")
 balance.CargoGrid.print()
-
-
-"""
-for cargo in reversed(balance.cargoList):
-    print(cargo.position)
-    for column in range(1, 3):  # column we drop cargo off at
-        cargoNode = copy.deepcopy(balance.CargoGrid)
-        cargoNode.print()
-        cargoNode.change_pos(
-            cargo.position, balance.CargoGrid.lowestPosition(column))
-        balance.nodeList.append(copy.deepcopy(cargoNode))
-    balance.nodeList = sorted(
-        balance.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)
-
-balance.nodeList[1].print()
-print(str(balance.CargoGrid.Weight_Ratio))
-
-cargo = balance.cargoList[0]
-for column in range(1, 3):
-    balance.nodeList.append(copy.deepcopy(balance.CargoGrid))
-    # balance.nodeList[len(balance.nodeList) - 1].change_pos(cargo.position,
-    # balance.CargoGrid.lowestPosition(column))
-    print(str(column))
-balance.nodeList[0].portSideMass = 4
-# balance.nodeList[0].print()
-# print(str(balance.nodeList[0].portSideMass) +
-# str(balance.CargoGrid.portSideMass))
-# balance.nodeList[1].print()
-balance.CargoGrid.print()
-"""
-
-"""
-for cargo in reversed(balance.cargoList):
-    for column in range(1, 3):
-        cargoGridCopy = Cargo_Grid(pandasDF_for_Manifest)
-        # cargoGridCopy.initial_array()
-        cargoGridCopy.Grid_Copy(cargo_grid)
-        cargoGridCopy.print()
-        cargoGridCopy.change_pos(cargo.position,
-                                 balance.CargoGrid.lowestPosition(7))
-        balance.nodeList.append(cargoGridCopy)
-
-# cargoGridCopy.print()
-cargo_grid.print()
-
-# balance.nodeList[0].print()
-cargo_grid.Grid_Copy(balance.nodeList[0])
-cargo_grid.print()
-"""
