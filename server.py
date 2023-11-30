@@ -9,9 +9,12 @@ from CargoGrid import Cargo_Grid
 # Functions from other files
 from signInHelper import signInHelper
 from manifestAccess import getManifestName
+from manifestAccess import getManifestGridHelper
+
 from Balance import Balance
 from writeToLog import getLogFileName
 from helpers import parse_balance_file
+
 app = Flask(__name__)
 
 CORS(app)
@@ -102,6 +105,7 @@ def receiveManifest():
 
 @app.route('/getGridInfo', methods=['GET'])
 def getManifestGrid():
+
     try:
 
         manifest_name: str = getManifestName()
@@ -109,39 +113,9 @@ def getManifestGrid():
         # Print the value of the variable
         print("Manifest Name:", manifest_name)
 
-        # Load the manifest file into a Pandas DataFrame
-        headers = ['Position', 'Weight', 'Cargo']
-        pandasDF_for_Manifest = pd.read_csv(
-            f'./ManifestInformation/{manifest_name}', sep=', ', names=headers, engine='python')
+        manifest_path = f'./ManifestInformation/{manifest_name}'
 
-        # Initialize and populate the Cargo_Grid
-        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
-        cargo_grid.array_builder()
-
-        # Convert the Cargo_Grid to a JSON-serializable format
-        grid_data = [{}] * 8
-        for i in range(8):
-            grid_data[i] = [{}] * 12
-
-        for eachRow in range(len(cargo_grid.cargo_grid)):
-            for eachCol in range(len(cargo_grid.cargo_grid[eachRow])):
-
-                cargo = cargo_grid.cargo_grid[eachRow][eachCol]
-
-                position = cargo.position
-                # print(position)
-
-                if position == [0, 0]:
-                    continue
-
-                rowNum = 8 - position[0]
-                colNum = position[1] - 1
-
-                grid_data[rowNum][colNum] = {
-                    "position": cargo.position,
-                    "name": cargo.name,
-                    "weight": cargo.weight
-                }
+        grid_data = getManifestGridHelper(manifest_path=manifest_path)
 
         # Return the JSON data
         return jsonify({'success': True, 'grid': grid_data})
@@ -149,6 +123,21 @@ def getManifestGrid():
     except Exception as e:
         print("Error:", str(e))
         return jsonify({'success': False, 'message': str(e)})
+
+
+@app.route('/updateManifestForCurrentMove', methods=['POST'])
+def getCurrentMoveManifestGrid():
+
+    if request.method == 'POST':
+        data = request.json
+        print(data)
+
+        moveNum = data['moveNum']
+        manifestPath = f"ManifestForEachMove/ManifestMove{moveNum}"
+
+        grid_data = getManifestGridHelper(manifest_path=manifestPath)
+
+        return jsonify({'success': True, 'grid': grid_data})
 
 
 @app.route('/sendTransferInfo', methods=['POST'])
@@ -214,10 +203,11 @@ def returnBalanceInfo():
 def downloadLog():
     log_file = getLogFileName()
     log_filename = os.path.basename(log_file)
-    
+
     if os.path.exists(log_file):
         response = send_file(log_file, as_attachment=True)
-        response.headers['Content-Disposition'] = 'attachment; filename=\"{}\"'.format(log_filename)
+        response.headers['Content-Disposition'] = 'attachment; filename=\"{}\"'.format(
+            log_filename)
         return response
     else:
         return jsonify({'success': False, 'message': 'Log file not found'})
