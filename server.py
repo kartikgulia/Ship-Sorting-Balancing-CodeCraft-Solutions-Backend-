@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, send_file
 import pandas as pd
 import datetime
 import os
+import shutil
+
 from flask_cors import CORS
 from CargoGrid import Cargo_Grid
 
@@ -14,6 +16,7 @@ from manifestAccess import getManifestGridHelper
 from Balance import Balance
 from writeToLog import getLogFileName
 from helpers import parse_balance_file
+from helpers import get_last_txt_file_name
 
 app = Flask(__name__)
 
@@ -87,7 +90,7 @@ def receiveManifest():
 
                 # Save the uploaded file to a specific directory
                 uploaded_file.save(f'./ManifestInformation/{fileName}')
-
+                uploaded_file.save(f'./ManifestForEachMove/ManifestMove0')
                 # Save the name of the uploaded file to "manifestName.txt"
                 with open(pathToManifestNameTextFile, 'w') as name_file:
                     name_file.write(fileName)
@@ -177,13 +180,12 @@ def storeInfo():
 
 @app.route('/balance', methods=['GET'])
 def returnBalanceInfo():
-
     if request.method == 'GET':
 
-        manifestName = f"./ManifestInformation/{getManifestName()}"
+        manifestName = getManifestName()
+        manifestNamePath = f"./ManifestInformation/{manifestName}"
         headers = ['Position', 'Weight', 'Cargo']
-        pandasDF_for_Manifest = pd.read_csv(
-            manifestName, sep=', ', names=headers, engine='python')
+        pandasDF_for_Manifest = pd.read_csv(manifestNamePath, sep=', ', names=headers, engine='python')
         cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
         cargo_grid.array_builder()
         # cargo_grid.print()
@@ -196,7 +198,19 @@ def returnBalanceInfo():
 
         with open("./ManifestInformation/Balance.txt", "w") as balance_file:
             balance_file.truncate(0)  # This will remove all text from the file
-        return jsonify({'manifestGrids': "progressionList", "listOfMoves": moves})
+
+        updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
+
+        # Assuming manifestName is a string variable that ends with '.txt'
+        manifestName = manifestName.rstrip('.txt')
+
+        # Now construct the outbound_file_path using the modified manifestName
+        outbound_file_path = f"./ManifestInformation/{manifestName}_OUTBOUND.txt"
+
+
+        shutil.copyfile(updatedManifestPath, outbound_file_path)
+
+        return jsonify({'manifestGrids': progressionList, "listOfMoves": moves})
 
 
 @app.route('/downloadLog', methods=['GET'])
@@ -211,6 +225,29 @@ def downloadLog():
         return response
     else:
         return jsonify({'success': False, 'message': 'Log file not found'})
+
+import os
+from flask import send_file
+
+@app.route('/downloadUpdatedManifest', methods=['GET'])
+def downloadUpdatedManifest():
+    # Delete all files in the ManifestForEachMove directory
+    directory = 'ManifestForEachMove'
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+    # Send the specific text file to the frontend
+    manifest_name = getManifestName()  # Assuming getManifestName() is a function you've defined
+    manifest_name = manifest_name.rstrip('.txt')
+
+    file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
+    
+    if os.path.exists(file_to_send):
+        return send_file(file_to_send, as_attachment=True, download_name="hi.txt")
+    else:
+        return "File not found", 404
 
 
 if __name__ == '__main__':
