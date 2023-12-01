@@ -132,8 +132,11 @@ class Cargo_Grid:
                     self.portSideMass += self.cargo_grid[x][y].weight
                 else:
                     self.starboardMass += self.cargo_grid[x][y].weight
-        self.Weight_Ratio = min(self.portSideMass, self.starboardMass) / \
-            max(self.starboardMass, self.portSideMass)
+        if(max(self.starboardMass, self.portSideMass) == 0):
+                self.Weight_Ratio = 1
+        else:
+            self.Weight_Ratio = min(self.portSideMass, self.starboardMass) / \
+                max(self.starboardMass, self.portSideMass)
 
     def Balance_Check(self):
         # if (abs(self.starboardMass - self.portSideMass) <= (max(self.starboardMass, self.portSideMass) * 0.10)):

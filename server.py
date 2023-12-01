@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, make_response
 import pandas as pd
 import datetime
 import os
@@ -210,7 +210,7 @@ def returnBalanceInfo():
 
         shutil.copyfile(updatedManifestPath, outbound_file_path)
 
-        return jsonify({'manifestGrids': progressionList, "listOfMoves": moves})
+        return jsonify({"listOfMoves": moves})
 
 
 @app.route('/downloadLog', methods=['GET'])
@@ -243,12 +243,21 @@ def downloadUpdatedManifest():
     manifest_name = manifest_name.rstrip('.txt')
 
     file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
-    
+    print(file_to_send)
     if os.path.exists(file_to_send):
-        return send_file(file_to_send, as_attachment=True, download_name="hi.txt")
+        return send_file(file_to_send, as_attachment=True)
     else:
         return "File not found", 404
 
+@app.route('/getOutboundName' , methods=['GET'])
+def getOutboundName():
+    # Send the specific text file to the frontend
+    manifest_name = getManifestName()  # Assuming getManifestName() is a function you've defined
+    manifest_name = manifest_name.rstrip('.txt')
 
+    file_to_send = f"{manifest_name}_OUTBOUND.txt"
+    print(file_to_send)
+
+    return jsonify({'fileName' : file_to_send})
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)
