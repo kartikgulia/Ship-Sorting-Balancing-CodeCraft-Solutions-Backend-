@@ -78,12 +78,6 @@ def receiveManifest():
         if request.files:
             uploaded_file = request.files['textfile']
 
-            # Delete the old manifest if it exists
-            old_manifest_name = getManifestName()
-
-            if os.path.exists(f'./ManifestInformation/{old_manifest_name}'):
-                os.remove(f'./ManifestInformation/{old_manifest_name}')
-
             # Process the uploaded file as needed
             if uploaded_file:
                 fileName = uploaded_file.filename
@@ -244,10 +238,22 @@ def downloadUpdatedManifest():
 
     file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
     print(file_to_send)
+
+    # Right after printing file_to_send, delete every file in ManifestInformation directory
+    # manifest_info_directory = 'ManifestInformation'
+    # for file in os.listdir(manifest_info_directory):
+    #     file_path = os.path.join(manifest_info_directory, file)
+
+    #     if file_path == "manifestName.txt":
+    #         continue
+    #     if os.path.isfile(file_path):
+    #         os.remove(file_path)
+
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
     else:
         return "File not found", 404
+
 
 @app.route('/getOutboundName' , methods=['GET'])
 def getOutboundName():
