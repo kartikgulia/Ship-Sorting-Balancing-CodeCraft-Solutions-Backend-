@@ -186,7 +186,7 @@ def returnBalanceInfo():
         balance = Balance(cargo_grid)
         balance.Balance("./ManifestInformation/Balance.txt")
         # balance.CargoGrid.print()
-        progressionList = balance.ProgressionList
+        # progressionList = balance.ProgressionList
 
         moves = parse_balance_file("./ManifestInformation/Balance.txt")
 
