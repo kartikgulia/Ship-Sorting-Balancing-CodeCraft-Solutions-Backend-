@@ -25,6 +25,14 @@ app = Flask(__name__)
 CORS(app)
 # python -m server run
 
+# dictionary of [row,col] : weight
+
+# used to propagate weights through each ManifestMove file if any changes are made
+
+# remember to reset everytime manifest is done
+locationToWeightDictionary = {
+
+}
 
 @app.route("/")
 def home():
@@ -321,6 +329,9 @@ def downloadUpdatedManifest():
     #         continue
     #     if os.path.isfile(file_path):
     #         os.remove(file_path)
+
+    # reset dictionary
+    locationToWeightDictionary = {}
 
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
