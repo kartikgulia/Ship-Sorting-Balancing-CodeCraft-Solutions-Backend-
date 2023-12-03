@@ -13,8 +13,6 @@ class Balance:
         self.CargoGrid = CargoGrid
         self.cargoList = []  # list of containers
         self.nodeList = []  # list of states in search tree
-        # might be able to use this for animation. stores the path of states to reach output
-        self.ProgressionList = []
 
     def CargoList(self):
         for x in range(len(self.CargoGrid.cargo_grid)):
@@ -24,15 +22,14 @@ class Balance:
                 if (y == 0):
                     continue
                 if (self.CargoGrid.cargo_grid[x][y].name != "NAN" and self.CargoGrid.cargo_grid[x][y].name != "UNUSED"):
-                    self.cargoList.append(self.CargoGrid.cargo_grid[x][y])
+                    self.cargoList.append(copy.deepcopy(
+                        self.CargoGrid.cargo_grid[x][y]))
 
     def Balance(self, filename):
         i = 0  # keeps track of what move we are on
         if not self.CargoGrid.Balance_Check():
             balanced = False
             output = ""
-            # Initialize ProgressionList at the beginning of each balance operation
-            # self.ProgressionList.append(self.CargoGrid.cargo_grid)
 
             # outputs manifest of initial state
             self.CargoGrid.output_progression(i)
@@ -40,7 +37,6 @@ class Balance:
             while not balanced:
                 i += 1
                 for cargo in reversed(self.cargoList):
-
                     for column in range(1, 13):  # column we drop cargo off at
                         cargoNode = Cargo_Grid(
                             self.CargoGrid.pandasDF_for_Manifest)
@@ -56,31 +52,25 @@ class Balance:
                 # outputs manifest of each move
                 self.CargoGrid.output_progression(i)
                 output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
-                # self.ProgressionList.append(self.nodeList[0])
 
                 if self.CargoGrid.Balance_Check():
                     with open(filename, "w") as file:
                         file.write(output)
-                    balanced = True
                     self.cargoList.clear()
                     self.nodeList.clear()
-                    self.ProgressionList.clear()
+                    balanced = True
 
         else:  # already balanced
             return  # not sure what to do if its already balanced
 
 
-# manifest = "BalanceTest.txt"
-# headers = ['Position', 'Weight', 'Cargo']
-# pandasDF_for_Manifest = pd.read_csv(
-    # manifest, sep=', ', names=headers, engine='python')
-# print(pandasDF_for_Manifest)
-
-# cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
-# cargo_grid.array_builder()
-# cargo_grid.print()
-# balance = Balance(cargo_grid)
-# balance.CargoList()
-# print(balance.cargoList)
-# balance.Balance("Balance.txt")
-# balance.CargoGrid.print()
+"""
+manifest = "ShipCase2.txt"
+headers = ['Position', 'Weight', 'Cargo']
+pandasDF_for_Manifest = pd.read_csv(
+    manifest, sep=', ', names=headers, engine='python')
+cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+cargo_grid.array_builder()
+balance = Balance(cargo_grid)
+balance.Balance("Balance.txt")
+"""

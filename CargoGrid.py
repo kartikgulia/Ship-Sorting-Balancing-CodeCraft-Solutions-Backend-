@@ -47,6 +47,8 @@ class Cargo:
     position = [0, 0]
     weight = 0
     name = "UNUSED"
+    # Goal = 0  # tells us whether unloaded cargo can reach goal or not (0 or 1)
+    GoalDistance = 0  # distance from goal (9,1)
 
 
 class Cargo_Grid:
@@ -60,6 +62,8 @@ class Cargo_Grid:
     starboardMass = 0
     portSideMass = 0
     Weight_Ratio = 0
+
+    # totalGoals = 0
 
     def __init__(self, pandasDF_for_Manifest):
         self.pandasDF_for_Manifest = pandasDF_for_Manifest
@@ -137,7 +141,7 @@ class Cargo_Grid:
 
     def Balance_Check(self):
         # if (abs(self.starboardMass - self.portSideMass) <= (max(self.starboardMass, self.portSideMass) * 0.10)):
-        if (self.Weight_Ratio > 0.9):
+        if (self.Weight_Ratio >= 0.9):
             return True
         else:
             return False
@@ -194,8 +198,6 @@ class Cargo_Grid:
 
             self.Weight_Ratio = min(self.portSideMass, self.starboardMass) / \
                 max(self.starboardMass, self.portSideMass)
-            # want to make a tree with multiple states for cargo grid
-            # return copy.deepcopy(self)
 
     def print(self):
         for x in range(len(self.cargo_grid)):
@@ -271,4 +273,5 @@ if __name__ == "__main__":
     print(str(cargo_grid.lowestPosition(8)))
 
     # system can make its own textfile. just need to pass in the name you want the text file to have and it will create a new text file
-    cargo_grid.output_manifest("newFile.txt")
+    cargo_grid.output_progression(0)
+    cargo_grid.output_progression(1)
