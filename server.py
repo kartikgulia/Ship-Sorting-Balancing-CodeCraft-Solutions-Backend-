@@ -31,7 +31,7 @@ CORS(app)
 # used to propagate weights through each ManifestMove file if any changes are made
 
 # remember to reset everytime manifest is done
-locationToWeightDictionary = {
+locationToLoadWeightsDictionary = {
 
 }
 
@@ -273,7 +273,44 @@ def updateWeight():
     else:
         return {"status": "error"}
     
-@app.route('/propagateWeights')
+@app.route('/propagateWeights' , methods = ['POST'])
+def propagateWeights():
+
+    # this route is called every time the next button is pressed.
+    
+    # input: 
+    #   1) the current move's FROM row and col
+    #   2) the current move's TO row and col
+    #   3) index of current move
+
+    # goal : send weight from ManifestMove{n} to ManifestMove{n+1}
+
+    # Algorithm
+    #   iterate through each element in the dictionary. for each position:
+
+        #   check if FROM exists in the locationToLoadWeightsDictionary 
+        #   if yes,
+        #       1) In the ManifestMove{n+1}, set the weight at the TO row and col
+        #       2) Change the key in the dictionary to represent the new TO position
+
+        #   else, just take the position in the dictionary and in the ManifestMove{n+1}, set the weight at the position
+
+    print()
+
+    if(request.method == 'POST'):
+
+        data = request.json
+
+        
+        fromRow = data['fromRow']
+        fromCol = data['fromCol']
+
+        toRow = data['toRow']
+        toCol = data['toCol']
+        moveNum = data['moveNum']
+
+
+    
 
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
@@ -318,7 +355,7 @@ def downloadUpdatedManifest():
     #         os.remove(file_path)
 
     # reset dictionary
-    locationToWeightDictionary = {}
+    locationToLoadWeightsDictionary = {}
 
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
