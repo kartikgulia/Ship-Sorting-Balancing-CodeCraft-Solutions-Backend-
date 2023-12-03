@@ -14,15 +14,26 @@ from manifestAccess import getManifestName
 from manifestAccess import getManifestGridHelper
 
 from Balance import Balance
+from Transfer import Transfer
 from writeToLog import getLogFileName
 from helpers import parse_balance_file
+from helpers import parse_transfer_file
 from helpers import get_last_txt_file_name
+from helpers import updateWeightInFile
 
 app = Flask(__name__)
 
 CORS(app)
 # python -m server run
 
+# dictionary of [row,col] : weight
+
+# used to propagate weights through each ManifestMove file if any changes are made
+
+# remember to reset everytime manifest is done
+locationToLoadWeightsDictionary = {
+
+}
 
 @app.route("/")
 def home():
@@ -83,8 +94,9 @@ def receiveManifest():
                 fileName = uploaded_file.filename
 
                 # Save the uploaded file to a specific directory
-                uploaded_file.save(f'./ManifestInformation/{fileName}')
-                uploaded_file.save(f'./ManifestForEachMove/ManifestMove0')
+                uploaded_file.save(f'ManifestInformation/{fileName}')
+                uploaded_file.seek(0)
+                uploaded_file.save(f'ManifestForEachMove/ManifestMove0')
                 # Save the name of the uploaded file to "manifestName.txt"
                 with open(pathToManifestNameTextFile, 'w') as name_file:
                     name_file.write(fileName)
@@ -144,16 +156,14 @@ def storeInfo():
         # print(data)
 
         # Directory where files will be stored
-        dir_path = 'ManifestInformation/TransferInformation'
+        dir_path = 'TransferInformation'
 
         # Ensure the directory exists
         os.makedirs(dir_path, exist_ok=True)
 
         # File paths
-        names_file_path = os.path.join(
-            dir_path, 'initialTruckContainerNames.txt')
-        positions_file_path = os.path.join(
-            dir_path, 'initialUnloadPositions.txt')
+        names_file_path = f"{dir_path}/initialTruckContainerNames.txt"
+        positions_file_path = f"{dir_path}/initialUnloadPositions.txt"
 
         # Writing names to the file
         with open(names_file_path, 'w') as names_file:
@@ -206,6 +216,101 @@ def returnBalanceInfo():
 
         return jsonify({"listOfMoves": moves})
 
+@app.route('/transfer', methods=['GET'])
+def returnTransferInfo():
+    if request.method == 'GET':
+
+        manifestName = getManifestName()
+        # manifestNamePath = f"ManifestInformation/{manifestName}"
+        
+        # headers = ['Position', 'Weight', 'Cargo']
+        # pandasDF_for_Manifest = pd.read_csv(
+        #     manifestNamePath, sep=', ', names=headers, engine='python')
+        # cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
+        # cargoGrid.array_builder()
+        # file1 = "TransferInformation/initialTruckContainerNames.txt"
+        # file2 = "TransferInformation/initialUnloadPositions.txt"
+        # transfer = Transfer(cargoGrid, file1, file2)
+        # transfer.Transfer("ManifestInformation/Transfer.txt")
+        moves = parse_transfer_file("ManifestInformation/Transfer.txt")
+
+        # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
+        #     transfer_file.truncate(0) 
+
+        updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
+
+        # Assuming manifestName is a string variable that ends with '.txt'
+        manifestName = manifestName.rstrip('.txt')
+
+        # Now construct the outbound_file_path using the modified manifestName
+        outbound_file_path = f"./ManifestInformation/{manifestName}_OUTBOUND.txt"
+
+
+        shutil.copyfile(updatedManifestPath, outbound_file_path)
+
+        return jsonify({"listOfMoves": moves})
+
+@app.route('/updateWeight', methods=['POST'])
+def updateWeight():
+    if request.method == 'POST':
+        data = request.json
+
+        stringWeight = f"{int(data['weight']):05d}"  # Format weight as a 5-digit number
+        row = data['row']
+        col = data['column']
+        moveNum = data['moveNum']
+
+        print(data)
+
+
+        # function that takes in a file path, row, col, and weight, and updates the weight
+
+        # Construct the file path
+        updateWeightInFile(row,col,stringWeight,moveNum)
+
+        return {"status": "success"}
+
+    else:
+        return {"status": "error"}
+    
+@app.route('/propagateWeights' , methods = ['POST'])
+def propagateWeights():
+
+    # this route is called every time the next button is pressed.
+    
+    # input: 
+    #   1) the current move's FROM row and col
+    #   2) the current move's TO row and col
+    #   3) index of current move
+
+    # goal : send weight from ManifestMove{n} to ManifestMove{n+1}
+
+    # Algorithm
+    #   iterate through each element in the dictionary. for each position:
+
+        #   check if FROM exists in the locationToLoadWeightsDictionary 
+        #   if yes,
+        #       1) In the ManifestMove{n+1}, set the weight at the TO row and col
+        #       2) Change the key in the dictionary to represent the new TO position
+
+        #   else, just take the position in the dictionary and in the ManifestMove{n+1}, set the weight at the position
+
+    print()
+
+    if(request.method == 'POST'):
+
+        data = request.json
+
+        
+        fromRow = data['fromRow']
+        fromCol = data['fromCol']
+
+        toRow = data['toRow']
+        toCol = data['toCol']
+        moveNum = data['moveNum']
+
+
+    
 
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
@@ -248,6 +353,9 @@ def downloadUpdatedManifest():
     #         continue
     #     if os.path.isfile(file_path):
     #         os.remove(file_path)
+
+    # reset dictionary
+    locationToLoadWeightsDictionary = {}
 
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
