@@ -268,6 +268,10 @@ def updateWeight():
         # Construct the file path
         updateWeightInFile(row,col,stringWeight,moveNum)
 
+
+        # add to dictionary
+
+        locationToLoadWeightsDictionary[ (row,col) ] = stringWeight
         return {"status": "success"}
 
     else:
@@ -309,6 +313,15 @@ def propagateWeights():
         toCol = data['toCol']
         moveNum = data['moveNum']
 
+        for key,value in locationToLoadWeightsDictionary.items():
+            
+            currentMoveFromPosition = (fromRow,fromCol)
+
+            if currentMoveFromPosition in locationToLoadWeightsDictionary:
+                print()
+        
+    
+    return {"status": "success"}
 
     
 
