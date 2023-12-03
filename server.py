@@ -146,16 +146,14 @@ def storeInfo():
         # print(data)
 
         # Directory where files will be stored
-        dir_path = 'ManifestInformation/TransferInformation'
+        dir_path = 'TransferInformation'
 
         # Ensure the directory exists
         os.makedirs(dir_path, exist_ok=True)
 
         # File paths
-        names_file_path = os.path.join(
-            dir_path, 'initialTruckContainerNames.txt')
-        positions_file_path = os.path.join(
-            dir_path, 'initialUnloadPositions.txt')
+        names_file_path = f"{dir_path}/initialTruckContainerNames.txt"
+        positions_file_path = f"{dir_path}/initialUnloadPositions.txt"
 
         # Writing names to the file
         with open(names_file_path, 'w') as names_file:
