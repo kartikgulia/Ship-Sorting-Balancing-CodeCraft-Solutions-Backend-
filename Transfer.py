@@ -107,7 +107,7 @@ class Transfer:
                         if self.CargoGrid.cargo_grid[cargo.position[0] + 1][cargo.position[1]].name != "UNUSED":
                             blockingCargo = self.CargoGrid.cargo_grid[cargo.position[0] +
                                                                       1][cargo.position[1]]
-                            if (blockingCargo.position[1] == 8):
+                            if (blockingCargo.position[1] == 12):
                                 self.CargoGrid.change_pos(blockingCargo.position, self.CargoGrid.lowestPosition(
                                     blockingCargo.position[1] - 1))  # move left if blocking cargo is at the end
                             else:
@@ -115,7 +115,7 @@ class Transfer:
                                     blockingCargo.position[1] + 1))  # move to right if cargo is blocking unload
                             i += 1
                             self.CargoGrid.output_progression(i)
-                            output += f"Move {self.CargoGrid.cargo_grid[cargo.position[0]][cargo.position[1] + 1].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                            output += f"Move {self.CargoGrid.cargo_grid[(self.CargoGrid.new_pos[0])][(self.CargoGrid.new_pos[1])].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
 
                         self.Unload(cargo)
                         self.UnloadList.pop(j)
