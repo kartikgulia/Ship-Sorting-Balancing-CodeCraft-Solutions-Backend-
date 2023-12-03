@@ -100,22 +100,27 @@ class Transfer:
                 self.UnloadList, key=lambda x: x.GoalDistance)
 
             while not transfer:
-                i += 1
                 if len(self.UnloadList) > 0:  # unload
                     j = 0
                     for cargo in self.UnloadList:
+                        # check if contianer is blocking unload
                         if self.CargoGrid.cargo_grid[cargo.position[0] + 1][cargo.position[1]].name != "UNUSED":
                             blockingCargo = self.CargoGrid.cargo_grid[cargo.position[0] +
                                                                       1][cargo.position[1]]
-                            self.CargoGrid.change_pos(blockingCargo.position, self.CargoGrid.lowestPosition(
-                                blockingCargo.position[1] + 1))  # move to right
+                            if (blockingCargo.position[1] == 8):
+                                self.CargoGrid.change_pos(blockingCargo.position, self.CargoGrid.lowestPosition(
+                                    blockingCargo.position[1] - 1))  # move left if blocking cargo is at the end
+                            else:
+                                self.CargoGrid.change_pos(blockingCargo.position, self.CargoGrid.lowestPosition(
+                                    blockingCargo.position[1] + 1))  # move to right if cargo is blocking unload
+                            i += 1
                             self.CargoGrid.output_progression(i)
-                            output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                            output += f"Move {self.CargoGrid.cargo_grid[cargo.position[0]][cargo.position[1] + 1].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
 
-                        i += 1
                         self.Unload(cargo)
                         self.UnloadList.pop(j)
-                        output += f"Move cargo from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to truck\n"
+                        output += f"Move {cargo.name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to truck\n"
+                        i += 1
                         self.CargoGrid.output_progression(i)
                         j += 1
                         break
@@ -123,12 +128,14 @@ class Transfer:
                 if len(self.LoadList) > 0:  # load
                     loadedCargo = self.LoadList.pop(0)
                     for column in range(1, 13):
+                        # load into lowest position of first column that is not full
                         if (self.CargoGrid.cargo_grid[8][column].name == "UNUSED"):
                             self.Load(
                                 loadedCargo, self.CargoGrid.lowestPosition(column))
                             break
+                    i += 1
                     self.CargoGrid.output_progression(i)
-                    output += f"Move cargo from truck to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                    output += f"Move {loadedCargo.name} from truck to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
 
                 if (len(self.UnloadList) == 0 and len(self.LoadList) == 0):
                     with open(filename, "w") as file:
