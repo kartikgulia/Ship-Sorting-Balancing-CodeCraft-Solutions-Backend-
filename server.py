@@ -211,7 +211,7 @@ def returnTransferInfo():
     if request.method == 'GET':
 
         manifestName = getManifestName()
-        manifestNamePath = f"./ManifestInformation/{manifestName}"
+        manifestNamePath = f"ManifestInformation/{manifestName}"
         
         headers = ['Position', 'Weight', 'Cargo']
         pandasDF_for_Manifest = pd.read_csv(
