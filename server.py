@@ -85,8 +85,9 @@ def receiveManifest():
                 fileName = uploaded_file.filename
 
                 # Save the uploaded file to a specific directory
-                uploaded_file.save(f'./ManifestInformation/{fileName}')
-                uploaded_file.save(f'./ManifestForEachMove/ManifestMove0')
+                uploaded_file.save(f'ManifestInformation/{fileName}')
+                uploaded_file.seek(0)
+                uploaded_file.save(f'ManifestForEachMove/ManifestMove0')
                 # Save the name of the uploaded file to "manifestName.txt"
                 with open(pathToManifestNameTextFile, 'w') as name_file:
                     name_file.write(fileName)
