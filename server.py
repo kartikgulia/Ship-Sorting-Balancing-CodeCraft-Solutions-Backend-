@@ -19,6 +19,7 @@ from writeToLog import getLogFileName
 from helpers import parse_balance_file
 from helpers import parse_transfer_file
 from helpers import get_last_txt_file_name
+from helpers import updateWeightInFile
 
 app = Flask(__name__)
 
@@ -261,33 +262,19 @@ def updateWeight():
 
         print(data)
 
+
+        # function that takes in a file path, row, col, and weight, and updates the weight
+
         # Construct the file path
-        file_path = f"ManifestForEachMove/ManifestMove{moveNum}"
-
-        # Read the file
-        with open(file_path, 'r') as file:
-            lines = file.readlines()
-
-        # Update the specific line
-        for i, line in enumerate(lines):
-            if line.startswith(f"[{row:02d},{col:02d}]"):
-                parts = line.split('}')
-                first_part = parts[0].split('{')[0]
-                second_part = parts[1]
-                # Reconstruct the line, preserving its original end character
-                lines[i] = f"{first_part}{{{stringWeight}}}{second_part}"
-                if not lines[i].endswith('\n') and i < len(lines) - 1:
-                    lines[i] += '\n'
-
-        # Write the changes back to the file
-        with open(file_path, 'w') as file:
-            file.writelines(lines)
+        updateWeightInFile(row,col,stringWeight,moveNum)
 
         return {"status": "success"}
 
     else:
         return {"status": "error"}
     
+@app.route('/propagateWeights')
+
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
     log_file = getLogFileName()
