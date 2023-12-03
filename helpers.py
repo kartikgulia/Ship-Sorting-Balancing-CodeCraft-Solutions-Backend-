@@ -12,6 +12,23 @@ def parse_balance_file(file_path):
             movements.append([from_coords, to_coords])
     return movements
 
+def parse_transfer_file(file_path):
+    movements = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            parts = line.strip().split(' ')
+            
+            # Process from_coords
+            from_coord_parts = parts[3].strip('()').split(',')
+            from_coords = [0, 0] if from_coord_parts[0] == "truck" else [int(coord) for coord in from_coord_parts]
+
+            # Process to_coords
+            to_coord_parts = parts[5].strip('()').split(',')
+            to_coords = [0, 0] if to_coord_parts[0] == "truck" else [int(coord) for coord in to_coord_parts]
+
+            movements.append([from_coords, to_coords])
+    return movements
+
 # # Usage
 # file_path = './ManifestInformation/Balance.txt'
 # movement_list = parse_balance_file(file_path)

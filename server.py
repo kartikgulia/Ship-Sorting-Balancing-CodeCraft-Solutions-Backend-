@@ -14,8 +14,10 @@ from manifestAccess import getManifestName
 from manifestAccess import getManifestGridHelper
 
 from Balance import Balance
+from Transfer import Transfer
 from writeToLog import getLogFileName
 from helpers import parse_balance_file
+from helpers import parse_transfer_file
 from helpers import get_last_txt_file_name
 
 app = Flask(__name__)
@@ -206,6 +208,43 @@ def returnBalanceInfo():
 
         return jsonify({"listOfMoves": moves})
 
+@app.route('/transfer', methods=['GET'])
+def returnTransferInfo():
+    if request.method == 'GET':
+
+        manifestName = getManifestName()
+        manifestNamePath = f"./ManifestInformation/{manifestName}"
+        headers = ['Position', 'Weight', 'Cargo']
+        pandasDF_for_Manifest = pd.read_csv(manifestNamePath, sep=', ', names=headers, engine='python')
+        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+        cargo_grid.array_builder()
+        # cargo_grid.print()
+
+        transferLoadFile = "./TransferInformation/initialTruckContainerNames.txt"
+        transferUnloadFile = "./TransferInformation/initialUnloadPositions.txt"
+        transfer = Transfer(cargo_grid,transferLoadFile,transferUnloadFile)
+        transfer.Transfer("./ManifestInformation/Transfer.txt")
+        # balance.Balance("./ManifestInformation/Balance.txt")
+        # balance.CargoGrid.print()
+        # progressionList = balance.ProgressionList
+
+        moves = parse_transfer_file("./ManifestInformation/Transfer.txt")
+
+        with open("./ManifestInformation/Transfer.txt", "w") as transfer_file:
+            transfer_file.truncate(0) 
+
+        updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
+
+        # Assuming manifestName is a string variable that ends with '.txt'
+        manifestName = manifestName.rstrip('.txt')
+
+        # Now construct the outbound_file_path using the modified manifestName
+        outbound_file_path = f"./ManifestInformation/{manifestName}_OUTBOUND.txt"
+
+
+        shutil.copyfile(updatedManifestPath, outbound_file_path)
+
+        return jsonify({"listOfMoves": moves})
 
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
