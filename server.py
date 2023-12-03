@@ -241,6 +241,45 @@ def returnTransferInfo():
 
         return jsonify({"listOfMoves": moves})
 
+@app.route('/updateWeight', methods=['POST'])
+def updateWeight():
+    if request.method == 'POST':
+        data = request.json
+
+        stringWeight = f"{int(data['weight']):05d}"  # Format weight as a 5-digit number
+        row = data['row']
+        col = data['column']
+        moveNum = data['moveNum']
+
+        print(data)
+
+        # Construct the file path
+        file_path = f"ManifestForEachMove/ManifestMove{moveNum}"
+
+        # Read the file
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+
+        # Update the specific line
+        for i, line in enumerate(lines):
+            if line.startswith(f"[{row:02d},{col:02d}]"):
+                parts = line.split('}')
+                first_part = parts[0].split('{')[0]
+                second_part = parts[1]
+                # Reconstruct the line, preserving its original end character
+                lines[i] = f"{first_part}{{{stringWeight}}}{second_part}"
+                if not lines[i].endswith('\n') and i < len(lines) - 1:
+                    lines[i] += '\n'
+
+        # Write the changes back to the file
+        with open(file_path, 'w') as file:
+            file.writelines(lines)
+
+        return {"status": "success"}
+
+    else:
+        return {"status": "error"}
+    
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
     log_file = getLogFileName()
