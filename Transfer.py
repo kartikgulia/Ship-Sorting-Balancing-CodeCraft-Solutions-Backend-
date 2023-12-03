@@ -38,6 +38,7 @@ class Transfer:
                 self.CargoGrid.cargo_grid[x][y]))
             # self.UnloadList.append(self.CargoGrid.cargo_grid[x][y])
 
+    """
     def CargoList(self):
         for x in range(len(self.CargoGrid.cargo_grid)):
             if (x == 0):
@@ -48,19 +49,13 @@ class Transfer:
                 if (self.CargoGrid.cargo_grid[x][y].name != "NAN" and self.CargoGrid.cargo_grid[x][y].name != "UNUSED"):
                     self.cargoList.append(copy.deepcopy(
                         self.CargoGrid.cargo_grid[x][y]))
-
     """
+
     def setGoals(self):
-        totalGoals = 0
         for cargo in self.UnloadList:
             x = cargo.position[0]
             y = cargo.position[1]
-            if (self.CargoGrid.cargo_grid[x+1][y].name == "UNUSED"):
-                cargo.Goal = 1
-            totalGoals += cargo.Goal
             cargo.GoalDistance = abs(9-x) + abs(1 - y)
-        self.CargoGrid.totalGoals = totalGoals
-    """
 
     # removes cargo from ship and places it on truck. also finds manhattan distance.
     def Unload(self, unloadCargo):
@@ -99,6 +94,7 @@ class Transfer:
         if (len(self.UnloadList) != 0 or len(self.LoadList) != 0):
             transfer = False
             output = ""
+            self.setGoals()
             self.CargoGrid.output_progression(i)
             self.UnloadList = sorted(
                 self.UnloadList, key=lambda x: x.GoalDistance)
