@@ -22,15 +22,15 @@ for x in transfer.LoadList:
     print(x.name)
 """
 
-# manifest = "TransferTestCase.txt"
-# headers = ['Position', 'Weight', 'Cargo']
-# pandasDF_for_Manifest = pd.read_csv(
-#     manifest, sep=', ', names=headers, engine='python')
-# cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
-# cargoGrid.array_builder()
-# file1 = "TransferTestCaseLoad.txt"
-# file2 = "TransferTestCaseUnload.txt"
-# transfer = Transfer(cargoGrid, file1, file2)
+manifest = "TransferTestCase.txt"
+headers = ['Position', 'Weight', 'Cargo']
+pandasDF_for_Manifest = pd.read_csv(
+    manifest, sep=', ', names=headers, engine='python')
+cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
+cargoGrid.array_builder()
+file1 = "TransferTestCaseLoad.txt"
+file2 = "TransferTestCaseUnload.txt"
+transfer = Transfer(cargoGrid, file1, file2)
 
 # # testing load
 # # car = Cargo()
@@ -43,18 +43,18 @@ for x in transfer.LoadList:
 # # transfer.CargoGrid.output_manifest("File.txt")
 
 # # testing transfer
-# transfer.Transfer("Transfer.txt")
+transfer.Transfer("Transfer.txt")
 
 
-manifest = "ManifestInformation/ShipCase1.txt"
-headers = ['Position', 'Weight', 'Cargo']
-pandasDF_for_Manifest = pd.read_csv(
-    manifest, sep=', ', names=headers, engine='python')
-cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
-cargoGrid.array_builder()
-file1 = "./TransferInformation/initialTruckContainerNames.txt"
-file2 = "./TransferInformation/initialUnloadPositions.txt"
-transfer = Transfer(cargoGrid, file1, file2)
+# manifest = "ManifestInformation/ShipCase1.txt"
+# headers = ['Position', 'Weight', 'Cargo']
+# pandasDF_for_Manifest = pd.read_csv(
+#     manifest, sep=', ', names=headers, engine='python')
+# cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
+# cargoGrid.array_builder()
+# file1 = "./TransferInformation/initialTruckContainerNames.txt"
+# file2 = "./TransferInformation/initialUnloadPositions.txt"
+# transfer = Transfer(cargoGrid, file1, file2)
 
-# testing transfer
-transfer.Transfer("ManifestInformation/Transfer.txt")
+# # testing transfer
+# transfer.Transfer("ManifestInformation/Transfer.txt")

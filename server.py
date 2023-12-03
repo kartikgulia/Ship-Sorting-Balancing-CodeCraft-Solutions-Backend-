@@ -212,24 +212,20 @@ def returnTransferInfo():
 
         manifestName = getManifestName()
         manifestNamePath = f"./ManifestInformation/{manifestName}"
+        
         headers = ['Position', 'Weight', 'Cargo']
-        pandasDF_for_Manifest = pd.read_csv(manifestNamePath, sep=', ', names=headers, engine='python')
-        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
-        cargo_grid.array_builder()
-        # cargo_grid.print()
+        pandasDF_for_Manifest = pd.read_csv(
+            manifestNamePath, sep=', ', names=headers, engine='python')
+        cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
+        cargoGrid.array_builder()
+        file1 = "TransferInformation/initialTruckContainerNames.txt"
+        file2 = "TransferInformation/initialUnloadPositions.txt"
+        transfer = Transfer(cargoGrid, file1, file2)
+        transfer.Transfer("ManifestInformation/Transfer.txt")
+        moves = parse_transfer_file("ManifestInformation/Transfer.txt")
 
-        transferLoadFile = "./TransferInformation/initialTruckContainerNames.txt"
-        transferUnloadFile = "./TransferInformation/initialUnloadPositions.txt"
-        transfer = Transfer(cargo_grid,transferLoadFile,transferUnloadFile)
-        transfer.Transfer("./ManifestInformation/Transfer.txt")
-        # balance.Balance("./ManifestInformation/Balance.txt")
-        # balance.CargoGrid.print()
-        # progressionList = balance.ProgressionList
-
-        moves = parse_transfer_file("./ManifestInformation/Transfer.txt")
-
-        with open("./ManifestInformation/Transfer.txt", "w") as transfer_file:
-            transfer_file.truncate(0) 
+        # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
+        #     transfer_file.truncate(0) 
 
         updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
 
