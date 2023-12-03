@@ -52,4 +52,3 @@ def getManifestGridHelper(manifest_path):
     return grid_data
 
 
-print(getManifestName())
