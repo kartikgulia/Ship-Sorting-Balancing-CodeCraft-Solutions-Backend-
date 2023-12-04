@@ -16,10 +16,8 @@ from manifestAccess import getManifestGridHelper
 from Balance import Balance
 from Transfer import Transfer
 from writeToLog import getLogFileName
-from helpers import parse_balance_file
-from helpers import parse_transfer_file
-from helpers import get_last_txt_file_name
-from helpers import updateWeightInFile
+from helpers import parse_balance_file, parse_transfer_file, get_last_txt_file_name, updateWeightInFile
+
 
 app = Flask(__name__)
 
@@ -203,16 +201,6 @@ def returnBalanceInfo():
         with open("./ManifestInformation/Balance.txt", "w") as balance_file:
             balance_file.truncate(0)  # This will remove all text from the file
 
-        updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
-
-        # Assuming manifestName is a string variable that ends with '.txt'
-        manifestName = manifestName.rstrip('.txt')
-
-        # Now construct the outbound_file_path using the modified manifestName
-        outbound_file_path = f"./ManifestInformation/{manifestName}_OUTBOUND.txt"
-
-
-        shutil.copyfile(updatedManifestPath, outbound_file_path)
 
         return jsonify({"listOfMoves": moves})
 
@@ -237,16 +225,7 @@ def returnTransferInfo():
         # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
         #     transfer_file.truncate(0) 
 
-        updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
-
-        # Assuming manifestName is a string variable that ends with '.txt'
-        manifestName = manifestName.rstrip('.txt')
-
-        # Now construct the outbound_file_path using the modified manifestName
-        outbound_file_path = f"./ManifestInformation/{manifestName}_OUTBOUND.txt"
-
-
-        shutil.copyfile(updatedManifestPath, outbound_file_path)
+        
 
         return jsonify({"listOfMoves": moves})
 
@@ -266,8 +245,14 @@ def updateWeight():
         # function that takes in a file path, row, col, and weight, and updates the weight
 
         # Construct the file path
-        updateWeightInFile(row,col,stringWeight,moveNum)
 
+        file_path = f"ManifestForEachMove/ManifestMove{moveNum}"
+        updateWeightInFile(row,col,stringWeight,file_path)
+
+
+        # add to dictionary
+
+        locationToLoadWeightsDictionary[ (row,col) ] = stringWeight
         return {"status": "success"}
 
     else:
@@ -308,7 +293,42 @@ def propagateWeights():
         toRow = data['toRow']
         toCol = data['toCol']
         moveNum = data['moveNum']
+        totalNumMoves = data['totalNumMoves']
+        print(totalNumMoves)
+        currentManifestFile = f"ManifestForEachMove/ManifestMove{moveNum-1}"
+        nextManifestFile = f"ManifestForEachMove/ManifestMove{moveNum}"
 
+        for key,value in locationToLoadWeightsDictionary.items():
+            
+            currentMoveFromPosition = (fromRow,fromCol)
+
+            if currentMoveFromPosition in locationToLoadWeightsDictionary:  # we're moving a "loaded container"
+                
+            
+                print()
+                
+                
+
+            else:   # not moving, just propagate the weight
+
+                # get the weight in the current move
+                weight = value
+                # print(weight)
+
+
+                # send weight to the next file
+                
+                if moveNum == totalNumMoves:    # on the last move
+
+                    updateWeightInFile(key[0],key[1], weight, currentManifestFile)
+                
+                else:
+
+                    updateWeightInFile(key[0],key[1], weight, nextManifestFile)
+                
+        
+    
+    return {"status": "success"}
 
     
 
@@ -330,16 +350,20 @@ from flask import send_file
 
 @app.route('/downloadUpdatedManifest', methods=['GET'])
 def downloadUpdatedManifest():
-    # Delete all files in the ManifestForEachMove directory
-    directory = 'ManifestForEachMove'
-    for file in os.listdir(directory):
-        file_path = os.path.join(directory, file)
-        if os.path.isfile(file_path):
-            os.remove(file_path)
+    
 
     # Send the specific text file to the frontend
     manifest_name = getManifestName()  # Assuming getManifestName() is a function you've defined
     manifest_name = manifest_name.rstrip('.txt')
+
+    updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
+
+
+    # Now construct the outbound_file_path using the modified manifestName
+    outbound_file_path = f"./ManifestInformation/{manifest_name}_OUTBOUND.txt"
+
+
+    shutil.copyfile(updatedManifestPath, outbound_file_path)
 
     file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
     print(file_to_send)
@@ -356,6 +380,15 @@ def downloadUpdatedManifest():
 
     # reset dictionary
     locationToLoadWeightsDictionary = {}
+
+    # Delete all files in the ManifestForEachMove directory
+    directory = 'ManifestForEachMove'
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+            
 
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)

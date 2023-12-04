@@ -34,9 +34,9 @@ def parse_transfer_file(file_path):
 # movement_list = parse_balance_file(file_path)
 # print(movement_list)
 
-def updateWeightInFile(row,col,stringWeight,moveNum):
+def updateWeightInFile(row,col,stringWeight,file_path):
 
-    file_path = f"ManifestForEachMove/ManifestMove{moveNum}"
+    
 
     # Read the file
     with open(file_path, 'r') as file:
@@ -56,6 +56,33 @@ def updateWeightInFile(row,col,stringWeight,moveNum):
     # Write the changes back to the file
     with open(file_path, 'w') as file:
         file.writelines(lines)
+
+# def getWeightInFile(row, col, file_path):
+#     try:
+#         with open(file_path, 'r') as file:
+#             lines = file.readlines()
+            
+#             # Formatting row and col to match the file's format
+#             row_str = f"{row:02d}" 
+#             col_str = f"{col:02d}"  
+
+#             # Searching for the correct line
+#             for line in lines:
+#                 if line.startswith(f"[{row_str},{col_str}]"):
+#                     # Extracting the weight
+#                     start = line.find('{') + 1
+#                     end = line.find('}')
+#                     return line[start:end]
+            
+#             return "Not found"  # Return this if the specified row and col are not found
+#     except FileNotFoundError:
+#         return "File not found"
+#     except Exception as e:
+#         return str(e)  # General error handling
+
+
+    
+
         
 def get_last_txt_file_name(folder_path):
     """
