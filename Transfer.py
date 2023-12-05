@@ -6,8 +6,7 @@ import copy
 
 class Transfer:
 
-    UnloadList = []  # contains cargo that needs to be unloaded
-    LoadList = []  # contains cargo getting loaded.
+    
     # cargoList = []  # list of containers
     # nodeList = []  # list of states
 
@@ -21,7 +20,8 @@ class Transfer:
         UnloadHeaders = ['Position']
         self.UnloadDF = pd.read_csv(
             unloadFile, sep=', ', names=UnloadHeaders, engine='python')
-
+        self.UnloadList = []  # contains cargo that needs to be unloaded
+        self.LoadList = []  # contains cargo getting loaded.
         self.conversion()
 
     def conversion(self):  # inputs data into class's list data members
