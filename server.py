@@ -208,7 +208,7 @@ def returnBalanceInfo():
 def returnTransferInfo():
     if request.method == 'GET':
 
-        performTransfer()
+        # performTransfer()
         moves = parse_transfer_file("ManifestInformation/Transfer.txt")
 
         # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
