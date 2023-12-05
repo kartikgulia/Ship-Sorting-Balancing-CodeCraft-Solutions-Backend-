@@ -156,6 +156,13 @@ class Cargo_Grid:
             if (cargo_column[x].name == "UNUSED"):
                 return cargo_column[x].position
 
+    # get position of highest container in a column
+    def highestContainer(self, column):
+        cargo_column = [row[column] for row in self.cargo_grid]
+        for x in reversed(range(1, len(cargo_column))):
+            if (cargo_column[x].name != "UNUSED"):
+                return cargo_column[x].position
+
     def valid_pos(self, old_pos, new_pos):  # makes sure move is valid
         x = new_pos[0]
         y = new_pos[1]

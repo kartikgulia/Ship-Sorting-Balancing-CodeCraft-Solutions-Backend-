@@ -6,7 +6,6 @@ import copy
 
 class Transfer:
 
-    
     # cargoList = []  # list of containers
     # nodeList = []  # list of states
 
@@ -78,7 +77,7 @@ class Transfer:
                 i += 1
             """
 
-    def Load(self, loadedCargo, position):  # loads cargo onto ship
+    def Load(self, loadedCargo, position):  # loads cargo onto ship at position
         x = position[0]
         y = position[1]
         self.CargoGrid.cargo_grid[x][y].name = loadedCargo.name
@@ -103,10 +102,16 @@ class Transfer:
                 if len(self.UnloadList) > 0:  # unload
                     j = 0
                     for cargo in self.UnloadList:
-                        # check if contianer is blocking unload
-                        if self.CargoGrid.cargo_grid[cargo.position[0] + 1][cargo.position[1]].name != "UNUSED":
-                            blockingCargo = self.CargoGrid.cargo_grid[cargo.position[0] +
-                                                                      1][cargo.position[1]]
+                        # check if container is blocking unload
+                        while self.CargoGrid.cargo_grid[cargo.position[0] + 1][cargo.position[1]].name != "UNUSED":
+
+                            # in case more then one cargo is blocking, get position of highest container in column
+                            blockingPosition = self.CargoGrid.highestContainer(
+                                cargo.position[1])
+                            blockingCargo = self.CargoGrid.cargo_grid[blockingPosition[0]
+                                                                      ][blockingPosition[1]]
+                            # blockingCargo = self.CargoGrid.cargo_grid[cargo.position[0]+1][cargo.position[1]]
+
                             if (blockingCargo.position[1] == 12):
                                 self.CargoGrid.change_pos(blockingCargo.position, self.CargoGrid.lowestPosition(
                                     blockingCargo.position[1] - 1))  # move left if blocking cargo is at the end
