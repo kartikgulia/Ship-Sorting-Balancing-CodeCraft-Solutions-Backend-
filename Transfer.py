@@ -123,7 +123,7 @@ class Transfer:
                             output += f"Move {self.CargoGrid.cargo_grid[(self.CargoGrid.new_pos[0])][(self.CargoGrid.new_pos[1])].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
 
                         self.CargoGrid.Manhattan_Dist += abs(
-                            cargo.position[0] - self.CargoGrid.new_pos[0]) + cargo.position([1]) - self.CargoGrid.new_pos[1]
+                            cargo.position[0] - self.CargoGrid.new_pos[0]) + abs(cargo.position([1]) - self.CargoGrid.new_pos[1])
                         self.Unload(cargo)
                         self.UnloadList.pop(j)
                         output += f"Move {cargo.name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to truck\n"
