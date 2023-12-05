@@ -209,17 +209,17 @@ def returnTransferInfo():
     if request.method == 'GET':
 
         manifestName = getManifestName()
-        # manifestNamePath = f"ManifestInformation/{manifestName}"
+        manifestNamePath = f"ManifestInformation/{manifestName}"
         
-        # headers = ['Position', 'Weight', 'Cargo']
-        # pandasDF_for_Manifest = pd.read_csv(
-        #     manifestNamePath, sep=', ', names=headers, engine='python')
-        # cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
-        # cargoGrid.array_builder()
-        # file1 = "TransferInformation/initialTruckContainerNames.txt"
-        # file2 = "TransferInformation/initialUnloadPositions.txt"
-        # transfer = Transfer(cargoGrid, file1, file2)
-        # transfer.Transfer("ManifestInformation/Transfer.txt")
+        headers = ['Position', 'Weight', 'Cargo']
+        pandasDF_for_Manifest = pd.read_csv(
+            manifestNamePath, sep=', ', names=headers, engine='python')
+        cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
+        cargoGrid.array_builder()
+        file1 = "TransferInformation/initialTruckContainerNames.txt"
+        file2 = "TransferInformation/initialUnloadPositions.txt"
+        transfer = Transfer(cargoGrid, file1, file2)
+        transfer.Transfer("ManifestInformation/Transfer.txt")
         moves = parse_transfer_file("ManifestInformation/Transfer.txt")
 
         # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
