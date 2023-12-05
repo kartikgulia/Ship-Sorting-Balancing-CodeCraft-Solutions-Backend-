@@ -16,7 +16,7 @@ from manifestAccess import getManifestGridHelper
 from Balance import Balance
 from Transfer import Transfer
 from writeToLog import getLogFileName
-from helpers import parse_balance_file, parse_transfer_file, get_last_txt_file_name, updateWeightInFile
+from helpers import parse_balance_file, parse_transfer_file, get_last_txt_file_name, updateWeightInFile, performTransfer
 
 
 app = Flask(__name__)
@@ -208,18 +208,7 @@ def returnBalanceInfo():
 def returnTransferInfo():
     if request.method == 'GET':
 
-        manifestName = getManifestName()
-        # manifestNamePath = f"ManifestInformation/{manifestName}"
-        
-        # headers = ['Position', 'Weight', 'Cargo']
-        # pandasDF_for_Manifest = pd.read_csv(
-        #     manifestNamePath, sep=', ', names=headers, engine='python')
-        # cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
-        # cargoGrid.array_builder()
-        # file1 = "TransferInformation/initialTruckContainerNames.txt"
-        # file2 = "TransferInformation/initialUnloadPositions.txt"
-        # transfer = Transfer(cargoGrid, file1, file2)
-        # transfer.Transfer("ManifestInformation/Transfer.txt")
+        performTransfer()
         moves = parse_transfer_file("ManifestInformation/Transfer.txt")
 
         # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
@@ -318,13 +307,9 @@ def propagateWeights():
 
                 # send weight to the next file
                 
-                if moveNum == totalNumMoves:    # on the last move
+               
 
-                    updateWeightInFile(key[0],key[1], weight, currentManifestFile)
-                
-                else:
-
-                    updateWeightInFile(key[0],key[1], weight, nextManifestFile)
+                updateWeightInFile(key[0],key[1], weight, nextManifestFile)
                 
         
     

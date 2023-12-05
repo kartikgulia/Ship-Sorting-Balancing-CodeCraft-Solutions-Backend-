@@ -1,5 +1,16 @@
 import os
+import pandas as pd
 
+from CargoGrid import Cargo_Grid
+from Transfer import Transfer
+from manifestAccess import getManifestName
+# Functions from other files
+
+
+
+
+from Balance import Balance
+from Transfer import Transfer
 def parse_balance_file(file_path):
     movements = []
     with open(file_path, 'r') as file:
@@ -57,6 +68,20 @@ def updateWeightInFile(row,col,stringWeight,file_path):
     with open(file_path, 'w') as file:
         file.writelines(lines)
 
+
+def performTransfer():
+    manifestName = getManifestName()
+    manifestNamePath = f"ManifestInformation/{manifestName}"
+    
+    headers = ['Position', 'Weight', 'Cargo']
+    pandasDF_for_Manifest = pd.read_csv(
+        manifestNamePath, sep=', ', names=headers, engine='python')
+    cargoGrid = Cargo_Grid(pandasDF_for_Manifest)
+    cargoGrid.array_builder()
+    file1 = "TransferInformation/initialTruckContainerNames.txt"
+    file2 = "TransferInformation/initialUnloadPositions.txt"
+    transfer = Transfer(cargoGrid, file1, file2)
+    transfer.Transfer("ManifestInformation/Transfer.txt")
 # def getWeightInFile(row, col, file_path):
 #     try:
 #         with open(file_path, 'r') as file:
