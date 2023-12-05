@@ -1,3 +1,4 @@
+from flask import send_file
 from flask import Flask, request, jsonify, send_file, make_response
 import pandas as pd
 import datetime
@@ -32,6 +33,7 @@ CORS(app)
 locationToLoadWeightsDictionary = {
 
 }
+
 
 @app.route("/")
 def home():
@@ -87,21 +89,28 @@ def receiveManifest():
         if request.files:
             uploaded_file = request.files['textfile']
 
-            # Process the uploaded file as needed
             if uploaded_file:
                 fileName = uploaded_file.filename
 
+                # Create directories if they don't exist
+                if not os.path.exists('ManifestInformation'):
+                    os.makedirs('ManifestInformation')
+
+                if not os.path.exists('ManifestForEachMove'):
+                    os.makedirs('ManifestForEachMove')
+
                 # Save the uploaded file to a specific directory
                 uploaded_file.save(f'ManifestInformation/{fileName}')
+
+                # Reset the file pointer to the beginning of the file
                 uploaded_file.seek(0)
+
+                # Save the file again in another directory
                 uploaded_file.save(f'ManifestForEachMove/ManifestMove0')
+
                 # Save the name of the uploaded file to "manifestName.txt"
                 with open(pathToManifestNameTextFile, 'w') as name_file:
                     name_file.write(fileName)
-
-                # You can also read the content of the file if needed
-                file_content = uploaded_file.read()
-                # print("Received file content:", file_content)
 
                 # Perform any additional processing on the file content here
 
@@ -187,7 +196,8 @@ def returnBalanceInfo():
         manifestName = getManifestName()
         manifestNamePath = f"./ManifestInformation/{manifestName}"
         headers = ['Position', 'Weight', 'Cargo']
-        pandasDF_for_Manifest = pd.read_csv(manifestNamePath, sep=', ', names=headers, engine='python')
+        pandasDF_for_Manifest = pd.read_csv(
+            manifestNamePath, sep=', ', names=headers, engine='python')
         cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
         cargo_grid.array_builder()
         # cargo_grid.print()
@@ -201,8 +211,8 @@ def returnBalanceInfo():
         with open("./ManifestInformation/Balance.txt", "w") as balance_file:
             balance_file.truncate(0)  # This will remove all text from the file
 
-
         return jsonify({"listOfMoves": moves})
+
 
 @app.route('/transfer', methods=['GET'])
 def returnTransferInfo():
@@ -212,47 +222,46 @@ def returnTransferInfo():
         moves = parse_transfer_file("ManifestInformation/Transfer.txt")
 
         # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
-        #     transfer_file.truncate(0) 
-
-        
+        #     transfer_file.truncate(0)
 
         return jsonify({"listOfMoves": moves})
+
 
 @app.route('/updateWeight', methods=['POST'])
 def updateWeight():
     if request.method == 'POST':
         data = request.json
 
-        stringWeight = f"{int(data['weight']):05d}"  # Format weight as a 5-digit number
+        # Format weight as a 5-digit number
+        stringWeight = f"{int(data['weight']):05d}"
         row = data['row']
         col = data['column']
         moveNum = data['moveNum']
 
         print(data)
 
-
         # function that takes in a file path, row, col, and weight, and updates the weight
 
         # Construct the file path
 
         file_path = f"ManifestForEachMove/ManifestMove{moveNum}"
-        updateWeightInFile(row,col,stringWeight,file_path)
-
+        updateWeightInFile(row, col, stringWeight, file_path)
 
         # add to dictionary
 
-        locationToLoadWeightsDictionary[ (row,col) ] = stringWeight
+        locationToLoadWeightsDictionary[(row, col)] = stringWeight
         return {"status": "success"}
 
     else:
         return {"status": "error"}
-    
-@app.route('/propagateWeights' , methods = ['POST'])
+
+
+@app.route('/propagateWeights', methods=['POST'])
 def propagateWeights():
 
     # this route is called every time the next button is pressed.
-    
-    # input: 
+
+    # input:
     #   1) the current move's FROM row and col
     #   2) the current move's TO row and col
     #   3) index of current move
@@ -262,20 +271,19 @@ def propagateWeights():
     # Algorithm
     #   iterate through each element in the dictionary. for each position:
 
-        #   check if FROM exists in the locationToLoadWeightsDictionary 
-        #   if yes,
-        #       1) In the ManifestMove{n+1}, set the weight at the TO row and col
-        #       2) Change the key in the dictionary to represent the new TO position
+    #   check if FROM exists in the locationToLoadWeightsDictionary
+    #   if yes,
+    #       1) In the ManifestMove{n+1}, set the weight at the TO row and col
+    #       2) Change the key in the dictionary to represent the new TO position
 
-        #   else, just take the position in the dictionary and in the ManifestMove{n+1}, set the weight at the position
+    #   else, just take the position in the dictionary and in the ManifestMove{n+1}, set the weight at the position
 
     print()
 
-    if(request.method == 'POST'):
+    if (request.method == 'POST'):
 
         data = request.json
 
-        
         fromRow = data['fromRow']
         fromCol = data['fromCol']
 
@@ -287,16 +295,13 @@ def propagateWeights():
         currentManifestFile = f"ManifestForEachMove/ManifestMove{moveNum-1}"
         nextManifestFile = f"ManifestForEachMove/ManifestMove{moveNum}"
 
-        for key,value in locationToLoadWeightsDictionary.items():
-            
-            currentMoveFromPosition = (fromRow,fromCol)
+        for key, value in locationToLoadWeightsDictionary.items():
+
+            currentMoveFromPosition = (fromRow, fromCol)
 
             if currentMoveFromPosition in locationToLoadWeightsDictionary:  # we're moving a "loaded container"
-                
-            
+
                 print()
-                
-                
 
             else:   # not moving, just propagate the weight
 
@@ -304,18 +309,12 @@ def propagateWeights():
                 weight = value
                 # print(weight)
 
-
                 # send weight to the next file
-                
-               
 
-                updateWeightInFile(key[0],key[1], weight, nextManifestFile)
-                
-        
-    
+                updateWeightInFile(key[0], key[1], weight, nextManifestFile)
+
     return {"status": "success"}
 
-    
 
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
@@ -330,23 +329,20 @@ def downloadLog():
     else:
         return jsonify({'success': False, 'message': 'Log file not found'})
 
-import os
-from flask import send_file
 
 @app.route('/downloadUpdatedManifest', methods=['GET'])
 def downloadUpdatedManifest():
-    
 
     # Send the specific text file to the frontend
-    manifest_name = getManifestName()  # Assuming getManifestName() is a function you've defined
+    # Assuming getManifestName() is a function you've defined
+    manifest_name = getManifestName()
     manifest_name = manifest_name.rstrip('.txt')
 
-    updatedManifestPath = f"ManifestForEachMove/{get_last_txt_file_name("./ManifestForEachMove")}"
-
+    updatedManifestPath = f"ManifestForEachMove/{
+        get_last_txt_file_name("./ManifestForEachMove")}"
 
     # Now construct the outbound_file_path using the modified manifestName
     outbound_file_path = f"./ManifestInformation/{manifest_name}_OUTBOUND.txt"
-
 
     shutil.copyfile(updatedManifestPath, outbound_file_path)
 
@@ -373,23 +369,24 @@ def downloadUpdatedManifest():
         if os.path.isfile(file_path):
             os.remove(file_path)
 
-            
-
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
     else:
         return "File not found", 404
 
 
-@app.route('/getOutboundName' , methods=['GET'])
+@app.route('/getOutboundName', methods=['GET'])
 def getOutboundName():
     # Send the specific text file to the frontend
-    manifest_name = getManifestName()  # Assuming getManifestName() is a function you've defined
+    # Assuming getManifestName() is a function you've defined
+    manifest_name = getManifestName()
     manifest_name = manifest_name.rstrip('.txt')
 
     file_to_send = f"{manifest_name}_OUTBOUND.txt"
     print(file_to_send)
 
-    return jsonify({'fileName' : file_to_send})
+    return jsonify({'fileName': file_to_send})
+
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)
