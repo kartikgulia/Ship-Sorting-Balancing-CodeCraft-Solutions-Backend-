@@ -307,13 +307,9 @@ def propagateWeights():
 
                 # send weight to the next file
                 
-                if moveNum == totalNumMoves:    # on the last move
+               
 
-                    updateWeightInFile(key[0],key[1], weight, currentManifestFile)
-                
-                else:
-
-                    updateWeightInFile(key[0],key[1], weight, nextManifestFile)
+                updateWeightInFile(key[0],key[1], weight, nextManifestFile)
                 
         
     
