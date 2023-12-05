@@ -48,7 +48,7 @@ class Balance:
                 self.nodeList = sorted(
                     self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)  # sort node list by how large weight ratio is
                 self.CargoGrid.Grid_Copy(  # set cargo grid to grid wth largest weight ratio
-                    self.nodeList[0])
+                    self.nodeList.pop(0))
                 # outputs manifest of each move
                 self.CargoGrid.output_progression(i)
                 output += f"Move {self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
