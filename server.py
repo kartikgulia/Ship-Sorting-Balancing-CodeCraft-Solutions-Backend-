@@ -390,5 +390,21 @@ def getOutboundName():
     return jsonify({'fileName': file_to_send})
 
 
+@app.route('/resetFilesForNewShip', methods=['GET'])
+def deleteFiles():
+
+    dir_names = ["TransferInformation",
+                 "ManifestInformation", "ManifestForEachMove"]
+
+    for dir_name in dir_names:
+        if os.path.exists(dir_name) and os.path.isdir(dir_name):
+            shutil.rmtree(dir_name)
+            print(f"Deleted directory: {dir_name}")
+        else:
+            print(f"Directory not found: {dir_name}")
+
+    return jsonify({'success': True})
+
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)
