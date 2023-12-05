@@ -19,6 +19,7 @@ from Transfer import Transfer
 from writeToLog import getLogFileName
 from helpers import parse_balance_file, parse_transfer_file, get_last_txt_file_name, updateWeightInFile, performTransfer
 
+import time
 
 app = Flask(__name__)
 
@@ -217,12 +218,13 @@ def returnBalanceInfo():
 @app.route('/transfer', methods=['GET'])
 def returnTransferInfo():
     if request.method == 'GET':
-
+        time.sleep(1)
         performTransfer()
+        time.sleep(1)
         moves = parse_transfer_file("ManifestInformation/Transfer.txt")
-
-        # with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
-        #     transfer_file.truncate(0)
+        time.sleep(1)
+        with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
+            transfer_file.truncate(0)
 
         return jsonify({"listOfMoves": moves})
 
