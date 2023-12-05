@@ -136,8 +136,8 @@ class Cargo_Grid:
                     self.portSideMass += self.cargo_grid[x][y].weight
                 else:
                     self.starboardMass += self.cargo_grid[x][y].weight
-        if(max(self.starboardMass, self.portSideMass) == 0):
-                self.Weight_Ratio = 1
+        if (max(self.starboardMass, self.portSideMass) == 0):
+            self.Weight_Ratio = 1
         else:
             self.Weight_Ratio = min(self.portSideMass, self.starboardMass) / \
                 max(self.starboardMass, self.portSideMass)
@@ -174,15 +174,18 @@ class Cargo_Grid:
     # moves cargo to new positon and find manhattan distance and weights of starboard and portside. Used with valid_pos to make transfers
     def change_pos(self, old_pos, new_pos):
 
-        self.old_pos = old_pos
-        self.new_pos = new_pos
-
         old_row = old_pos[0]
         old_column = old_pos[1]
         new_row = new_pos[0]
         new_column = new_pos[1]
 
         if (self.valid_pos(old_pos, new_pos)):
+
+            self.Manhattan_Dist += abs(self.new_pos[0] - old_row) + \
+                abs(self.new_pos[1] - old_column)  # want to get distance crane travels from where it drops off container to where it picks up another container
+
+            self.old_pos = old_pos
+            self.new_pos = new_pos
 
             self.Manhattan_Dist += abs(new_row - old_row) + \
                 abs(new_column - old_column)
