@@ -151,9 +151,9 @@ def getCurrentMoveManifestGrid():
 
         moveNum = data['moveNum']
         manifestPath = f"ManifestForEachMove/ManifestMove{moveNum}"
-
+        time.sleep(0.5)
         grid_data = getManifestGridHelper(manifest_path=manifestPath)
-
+        time.sleep(0.5)
         return jsonify({'success': True, 'grid': grid_data})
 
 
