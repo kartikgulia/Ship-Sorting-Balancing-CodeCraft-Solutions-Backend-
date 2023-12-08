@@ -207,7 +207,9 @@ def returnBalanceInfo():
         # balance.CargoGrid.print()
         # progressionList = balance.ProgressionList
 
-        moves = parse_balance_file("./ManifestInformation/Balance.txt")
+        move = []
+        if (os.path.exists("./ManifestInformation/Balance.txt")):
+            moves = parse_balance_file("./ManifestInformation/Balance.txt")
 
         with open("./ManifestInformation/Balance.txt", "w") as balance_file:
             balance_file.truncate(0)  # This will remove all text from the file
@@ -226,6 +228,7 @@ def returnTransferInfo():
         with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
             transfer_file.truncate(0)
 
+        time.sleep(1)
         return jsonify({"listOfMoves": moves})
 
 
