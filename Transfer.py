@@ -19,6 +19,7 @@ class Transfer:
         UnloadHeaders = ['Position']
         self.UnloadDF = pd.read_csv(
             unloadFile, sep=', ', names=UnloadHeaders, engine='python')
+
         self.UnloadList = []  # contains cargo that needs to be unloaded
         self.LoadList = []  # contains cargo getting loaded.
         self.conversion()
@@ -35,7 +36,10 @@ class Transfer:
             y = int(p[2])
             self.UnloadList.append(copy.deepcopy(
                 self.CargoGrid.cargo_grid[x][y]))
-            # self.UnloadList.append(self.CargoGrid.cargo_grid[x][y])
+
+        self.UnloadList = sorted(
+            self.UnloadList, reverse=True, key=lambda x: x.position[0])
+        # self.UnloadList.append(self.CargoGrid.cargo_grid[x][y])
 
     """
     def CargoList(self):
@@ -62,8 +66,12 @@ class Transfer:
         y = unloadCargo.position[1]
         if (self.CargoGrid.cargo_grid[x+1][y].name == 'UNUSED'):
             # goal is (9,1) + 2 minutes from ship to truck
-            self.CargoGrid.Manhattan_Dist += abs(
-                x - self.CargoGrid.new_pos[0]) + abs(y - self.CargoGrid.new_pos[1])
+            if (self.CargoGrid.new_pos == "Truck"):
+                self.CargoGrid.Manhattan_Dist += abs(9 - x) + \
+                    abs(1 - y) + 2
+            else:
+                self.CargoGrid.Manhattan_Dist += abs(
+                    x - self.CargoGrid.new_pos[0]) + abs(y - self.CargoGrid.new_pos[1])
             self.CargoGrid.Manhattan_Dist += abs(9 - x) + \
                 abs(1 - y) + 2
             self.CargoGrid.cargo_grid[x][y].name = 'UNUSED'
@@ -103,7 +111,7 @@ class Transfer:
             while not transfer:
                 if len(self.UnloadList) > 0:  # unload
                     j = 0
-                    for cargo in self.UnloadList:
+                    for cargo in (self.UnloadList):
                         # check if container is blocking unload
                         while self.CargoGrid.cargo_grid[cargo.position[0] + 1][cargo.position[1]].name != "UNUSED":
 
