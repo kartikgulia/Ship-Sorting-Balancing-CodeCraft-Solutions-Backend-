@@ -386,14 +386,14 @@ def deleteFiles():
     # reset dictionary
     locationToLoadWeightsDictionary = {}
 
-    balancePath = "./ManifestInformation/Balance.txt"
-    if(os.path.exists(balancePath)):
-        with open(balancePath, "w") as balance_file:
-                balance_file.truncate(0)  # This will remove all text from the file
+    # balancePath = "./ManifestInformation/Balance.txt"
+    # if(os.path.exists(balancePath)):
+    #     with open(balancePath, "w") as balance_file:
+    #             balance_file.truncate(0)  # This will remove all text from the file
     
-    else:
-        with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
-            transfer_file.truncate(0)
+    # else:
+    #     with open("./ManifestInformation/Transfer.txt", "w") as transfer_file:
+    #         transfer_file.truncate(0)
 
 
     return jsonify({'success': True})
