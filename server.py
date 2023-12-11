@@ -211,8 +211,7 @@ def returnBalanceInfo():
         if (os.path.exists("./ManifestInformation/Balance.txt")):
             moves = parse_balance_file("./ManifestInformation/Balance.txt")
 
-        with open("./ManifestInformation/Balance.txt", "w") as balance_file:
-            balance_file.truncate(0)  # This will remove all text from the file
+
 
         return jsonify({"listOfMoves": moves})
 
@@ -224,10 +223,6 @@ def returnTransferInfo():
         performTransfer()
         time.sleep(1)
         moves = parse_transfer_file("ManifestInformation/Transfer.txt")
-        time.sleep(1)
-        with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
-            transfer_file.truncate(0)
-
         time.sleep(1)
         return jsonify({"listOfMoves": moves})
 
@@ -353,26 +348,8 @@ def downloadUpdatedManifest():
 
     file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
     print(file_to_send)
-
-    # Right after printing file_to_send, delete every file in ManifestInformation directory
-    # manifest_info_directory = 'ManifestInformation'
-    # for file in os.listdir(manifest_info_directory):
-    #     file_path = os.path.join(manifest_info_directory, file)
-
-    #     if file_path == "manifestName.txt":
-    #         continue
-    #     if os.path.isfile(file_path):
-    #         os.remove(file_path)
-
-    # reset dictionary
-    locationToLoadWeightsDictionary = {}
-
-    # Delete all files in the ManifestForEachMove directory
-    directory = 'ManifestForEachMove'
-    for file in os.listdir(directory):
-        file_path = os.path.join(directory, file)
-        if os.path.isfile(file_path):
-            os.remove(file_path)
+    
+    time.sleep(0.5)
 
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
@@ -405,6 +382,19 @@ def deleteFiles():
             print(f"Deleted directory: {dir_name}")
         else:
             print(f"Directory not found: {dir_name}")
+
+    # reset dictionary
+    locationToLoadWeightsDictionary = {}
+
+    balancePath = "./ManifestInformation/Balance.txt"
+    if(os.path.exists(balancePath)):
+        with open(balancePath, "w") as balance_file:
+                balance_file.truncate(0)  # This will remove all text from the file
+    
+    else:
+        with open("ManifestInformation/Transfer.txt", "w") as transfer_file:
+            transfer_file.truncate(0)
+
 
     return jsonify({'success': True})
 
