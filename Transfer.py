@@ -131,11 +131,11 @@ class Transfer:
                                     blockingCargo.position[1] + 1))  # move to right if cargo is blocking unload
                             i += 1
                             self.CargoGrid.output_progression(i)
-                            output += f"Move {self.CargoGrid.cargo_grid[(self.CargoGrid.new_pos[0])][(self.CargoGrid.new_pos[1])].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                            output += f"Move {self.CargoGrid.cargo_grid[(self.CargoGrid.new_pos[0])][(self.CargoGrid.new_pos[1])].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])}), Time: {str(self.CargoGrid.Manhattan_Dist)} minutes\n"
 
                         self.Unload(cargo)
                         self.UnloadList.pop(j)
-                        output += f"Move {cargo.name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to truck\n"
+                        output += f"Move {cargo.name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to truck, Time: {str(self.CargoGrid.Manhattan_Dist)} minutes\n"
                         i += 1
                         self.CargoGrid.output_progression(i)
                         j += 1
@@ -151,7 +151,7 @@ class Transfer:
                             break
                     i += 1
                     self.CargoGrid.output_progression(i)
-                    output += f"Move {loadedCargo.name} from truck to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                    output += f"Move {loadedCargo.name} from truck to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])}), Time: {str(self.CargoGrid.Manhattan_Dist)} minutes\n"
 
                 if (len(self.UnloadList) == 0 and len(self.LoadList) == 0):
                     with open(filename, "w") as file:

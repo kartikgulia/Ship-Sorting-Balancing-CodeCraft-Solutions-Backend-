@@ -51,7 +51,7 @@ class Balance:
                     self.nodeList.pop(0))
                 # outputs manifest of each move
                 self.CargoGrid.output_progression(i)
-                output += f"Move {self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])})\n"
+                output += f"Move {self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name} from ({str(self.CargoGrid.old_pos[0])},{str(self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])}), Time: {str(self.CargoGrid.Manhattan_Dist)} minutes\n"
 
                 if self.CargoGrid.Balance_Check():
                     with open(filename, "w") as file:
