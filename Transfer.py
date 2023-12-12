@@ -66,12 +66,15 @@ class Transfer:
         y = unloadCargo.position[1]
         if (self.CargoGrid.cargo_grid[x+1][y].name == 'UNUSED'):
             # goal is (9,1) + 2 minutes from ship to truck
-            if (self.CargoGrid.new_pos == "Truck"):
-                self.CargoGrid.Manhattan_Dist += abs(9 - x) + \
-                    abs(1 - y) + 2
-            else:
-                self.CargoGrid.Manhattan_Dist += abs(
-                    x - self.CargoGrid.new_pos[0]) + abs(y - self.CargoGrid.new_pos[1])
+
+            if (self.CargoGrid.new_pos[0] != 0 and self.CargoGrid.new_pos[1] != 0):
+                if (self.CargoGrid.new_pos == "Truck"):
+                    self.CargoGrid.Manhattan_Dist += abs(9 - x) + \
+                        abs(1 - y) + 2
+                else:
+                    self.CargoGrid.Manhattan_Dist += abs(
+                        x - self.CargoGrid.new_pos[0]) + abs(y - self.CargoGrid.new_pos[1])
+
             self.CargoGrid.Manhattan_Dist += abs(9 - x) + \
                 abs(1 - y) + 2
             self.CargoGrid.cargo_grid[x][y].name = 'UNUSED'
@@ -79,13 +82,6 @@ class Transfer:
 
             self.CargoGrid.old_pos = [x, y]
             self.CargoGrid.new_pos = "Truck"
-            """
-            i = 0
-            for cargo in self.cargoList:
-                if cargo.position == unloadCargo.position:
-                    self.cargoList.pop(i)
-                i += 1
-            """
 
     def Load(self, loadedCargo, position):  # loads cargo onto ship at position
         x = position[0]

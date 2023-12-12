@@ -190,8 +190,10 @@ class Cargo_Grid:
 
         if (self.valid_pos(old_pos, new_pos)):
 
-            self.Manhattan_Dist += abs(self.new_pos[0] - old_row) + \
-                abs(self.new_pos[1] - old_column)  # want to get distance crane travels from where it drops off container to where it picks up another container
+            if (self.new_pos[0] != 0 and self.new_pos[1] != 0):
+                # want to get distance crane travels from where it drops off container to where it picks up another container
+                self.Manhattan_Dist += abs(self.new_pos[0] - old_row) + abs(
+                    self.new_pos[1] - old_column)
 
             self.old_pos = old_pos
             self.new_pos = new_pos
