@@ -167,7 +167,9 @@ class Cargo_Grid:
         x = new_pos[0]
         y = new_pos[1]
         # old position has a container above it
-        if (self.cargo_grid[old_pos[0] + 1][old_pos[1]].name != "UNUSED"):
+        if (old_pos[0] == 8):
+            return True
+        elif (self.cargo_grid[old_pos[0] + 1][old_pos[1]].name != "UNUSED"):
             return False
         # new position is already filled or is nan
         elif (self.cargo_grid[x][y].name != "UNUSED"):

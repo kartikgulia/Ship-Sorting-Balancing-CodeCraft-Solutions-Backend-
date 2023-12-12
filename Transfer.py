@@ -118,6 +118,7 @@ class Transfer:
                             # in case more then one cargo is blocking, get position of highest container in column
                             blockingPosition = self.CargoGrid.highestContainer(
                                 cargo.position[1])
+
                             blockingCargo = self.CargoGrid.cargo_grid[blockingPosition[0]
                                                                       ][blockingPosition[1]]
                             # blockingCargo = self.CargoGrid.cargo_grid[cargo.position[0]+1][cargo.position[1]]
