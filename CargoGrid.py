@@ -57,7 +57,7 @@ class Cargo_Grid:
     Manhattan_Dist = 0
 
     old_pos = [0, 0]  # use for operations list
-    new_pos = [0, 0]  # use for operations list
+    new_pos = [9, 1]  # use for operations list
 
     starboardMass = 0
     portSideMass = 0
