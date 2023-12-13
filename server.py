@@ -17,7 +17,7 @@ from manifestAccess import getManifestGridHelper
 from Balance import Balance
 from Transfer import Transfer
 from writeToLog import getLogFileName
-from helpers import parse_balance_file, parse_transfer_file, get_last_txt_file_name, updateWeightInFile, performTransfer
+from helpers import parse_file, get_last_txt_file_name, updateWeightInFile, performTransfer
 
 import time
 
@@ -207,13 +207,12 @@ def returnBalanceInfo():
         # balance.CargoGrid.print()
         # progressionList = balance.ProgressionList
 
-        move = []
         if (os.path.exists("./ManifestInformation/Balance.txt")):
-            moves = parse_balance_file("./ManifestInformation/Balance.txt")
+            moveCoordinates, names, times = parse_file("./ManifestInformation/Balance.txt")
 
 
 
-        return jsonify({"listOfMoves": moves})
+        return jsonify({"listOfMoves": moveCoordinates})
 
 
 @app.route('/transfer', methods=['GET'])
@@ -222,9 +221,9 @@ def returnTransferInfo():
         time.sleep(1)
         performTransfer()
         time.sleep(1)
-        moves = parse_transfer_file("ManifestInformation/Transfer.txt")
+        moveCoordinates, names, times = parse_file("ManifestInformation/Transfer.txt")
         time.sleep(1)
-        return jsonify({"listOfMoves": moves})
+        return jsonify({"listOfMoves": moveCoordinates})
 
 
 @app.route('/updateWeight', methods=['POST'])

@@ -1,4 +1,5 @@
 import os
+import re
 import pandas as pd
 
 from CargoGrid import Cargo_Grid
@@ -9,36 +10,69 @@ from manifestAccess import getManifestName
 
 
 
-from Balance import Balance
-from Transfer import Transfer
-def parse_balance_file(file_path):
-    movements = []
+def extract_name(line):
+    match = re.search(r'Move (.+?) from', line)
+    return match.group(1) if match else None
+
+def extract_cumulative_time(lines):
+    times = []
+    previous_time = 0
+
+    for line in lines:
+        match = re.search(r'Time: (\d+) minutes', line)
+        if match:
+            current_time = int(match.group(1))
+            cumulative_time = current_time - previous_time
+            times.append(cumulative_time)
+            previous_time = current_time
+
+    return times
+
+
+def extract_first_coordinate(line):
+    match = re.search(r'from (\w+|\(\d+,\d+\))', line)
+    if match:
+        coord = match.group(1)
+        if coord.lower() == "truck":
+            return [0,0]
+        else:
+            return [int(c) for c in coord.strip("()").split(',')]
+    return None
+
+# Function to extract the second coordinate
+def extract_second_coordinate(line):
+    match = re.search(r'to (\w+|\(\d+,\d+\))', line)
+    if match:
+        coord = match.group(1)
+        if coord.lower() == "truck":
+            return [0,0]
+        else:
+            return [int(c) for c in coord.strip("()").split(',')]
+    return None
+
+def parse_file(file_path):
+
+    moveCoordinates = []
+    names = []
     with open(file_path, 'r') as file:
-        for line in file:
-            parts = line.strip().split(' ')
-            from_coords = [int(coord)
-                           for coord in parts[3].strip('()').split(',')]
-            to_coords = [int(coord)
-                         for coord in parts[5].strip('()').split(',')]
-            movements.append([from_coords, to_coords])
-    return movements
 
-def parse_transfer_file(file_path):
-    movements = []
+      
+
+        for line in file:
+            first_coordinate = extract_first_coordinate(line)
+            second_coordinate = extract_second_coordinate(line)
+
+            moveCoordinates.append([first_coordinate,second_coordinate])
+
+            eachName = extract_name(line)
+
+            names.append(eachName)
+
+
     with open(file_path, 'r') as file:
-        for line in file:
-            parts = line.strip().split(' ')
-            
-            # Process from_coords
-            from_coord_parts = parts[3].strip('()').split(',')
-            from_coords = [0, 0] if from_coord_parts[0] == "truck" else [int(coord) for coord in from_coord_parts]
-
-            # Process to_coords
-            to_coord_parts = parts[5].strip('()').split(',')
-            to_coords = [0, 0] if to_coord_parts[0] == "truck" else [int(coord) for coord in to_coord_parts]
-
-            movements.append([from_coords, to_coords])
-    return movements
+        times = extract_cumulative_time(file)
+        
+    return moveCoordinates, names, times
 
 # # Usage
 # file_path = './ManifestInformation/Balance.txt'
