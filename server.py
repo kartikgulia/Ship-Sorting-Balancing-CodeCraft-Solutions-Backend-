@@ -190,7 +190,7 @@ def storeInfo():
     return jsonify({'success': False, 'message': 'Invalid request method or error occurred'})
 
 
-@app.route('/balance', methods=['GET'])
+@app.route('/fetchOperationData', methods=['GET'])
 def returnBalanceInfo():
     if request.method == 'GET':
 
@@ -210,20 +210,11 @@ def returnBalanceInfo():
         if (os.path.exists("./ManifestInformation/Balance.txt")):
             moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Balance.txt")
 
-
+        else:
+            moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Transfer.txt")
 
         return jsonify({"listOfMoves": moveCoordinates})
 
-
-@app.route('/transfer', methods=['GET'])
-def returnTransferInfo():
-    if request.method == 'GET':
-        time.sleep(1)
-        performTransfer()
-        time.sleep(1)
-        moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Transfer.txt")
-        time.sleep(1)
-        return jsonify({"listOfMoves": moveCoordinates})
 
 
 @app.route('/updateWeight', methods=['POST'])
