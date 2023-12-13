@@ -208,7 +208,7 @@ def returnBalanceInfo():
         # progressionList = balance.ProgressionList
 
         if (os.path.exists("./ManifestInformation/Balance.txt")):
-            moveCoordinates, names, times = parse_file("./ManifestInformation/Balance.txt")
+            moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Balance.txt")
 
 
 
@@ -221,7 +221,7 @@ def returnTransferInfo():
         time.sleep(1)
         performTransfer()
         time.sleep(1)
-        moveCoordinates, names, times = parse_file("ManifestInformation/Transfer.txt")
+        moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Transfer.txt")
         time.sleep(1)
         return jsonify({"listOfMoves": moveCoordinates})
 

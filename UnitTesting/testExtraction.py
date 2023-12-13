@@ -5,19 +5,34 @@ def extract_name(line):
     match = re.search(r'Move (.+?) from', line)
     return match.group(1) if match else None
 
-def extract_cumulative_time(lines):
+def extract_times(lines):
     times = []
     previous_time = 0
-
+    
     for line in lines:
         match = re.search(r'Time: (\d+) minutes', line)
         if match:
-            current_time = int(match.group(1))
-            cumulative_time = current_time - previous_time
-            times.append(cumulative_time)
-            previous_time = current_time
+            cumulative_time = int(match.group(1))
+            current_time = cumulative_time - previous_time
+            times.append(current_time)
+            previous_time = cumulative_time
 
-    return times
+
+    remaining_times = []
+
+    currentRemainingTime = 0
+    for i in range(len(times)-1, -1, -1):
+
+        timeOfCurrentMove = times[i]
+
+        currentRemainingTime += timeOfCurrentMove
+
+        remaining_times.insert(0,currentRemainingTime)
+
+
+
+    return times, remaining_times
+
 
 
 def extract_first_coordinate(line):
@@ -56,6 +71,13 @@ if __name__ == "__main__":
 
     # print(extract_name(text_line))
 
-    text_line = ["Move Cat Parts yay from (2,1) to truck, Time: 9 minutes"]
+    text_lines = ["Move Cat from (2,1) to truck, Time: 9 minutes",
+                    "Move Doe from (2,2) to truck, Time: 29 minutes",
+                    "Move Ewe from (1,1) to truck, Time: 49 minutes",
+                    "Move Cow from (1,2) to truck, Time: 71 minutes",
+                    "Move Dog from (1,3) to truck, Time: 95 minutes",
+                    "Move Rat from (1,4) to truck, Time: 121 minutes"]
 
-    print(extract_cumulative_time(text_line))
+    times, times_remaining = extract_times(text_lines)
+
+    print(times_remaining)

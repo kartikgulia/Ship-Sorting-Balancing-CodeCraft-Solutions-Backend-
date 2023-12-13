@@ -14,19 +14,33 @@ def extract_name(line):
     match = re.search(r'Move (.+?) from', line)
     return match.group(1) if match else None
 
-def extract_cumulative_time(lines):
+def extract_times(lines):
     times = []
     previous_time = 0
-
+    
     for line in lines:
         match = re.search(r'Time: (\d+) minutes', line)
         if match:
-            current_time = int(match.group(1))
-            cumulative_time = current_time - previous_time
-            times.append(cumulative_time)
-            previous_time = current_time
+            cumulative_time = int(match.group(1))
+            current_time = cumulative_time - previous_time
+            times.append(current_time)
+            previous_time = cumulative_time
 
-    return times
+
+    remaining_times = []
+
+    currentRemainingTime = 0
+    for i in range(len(times)-1, -1, -1):
+
+        timeOfCurrentMove = times[i]
+
+        currentRemainingTime += timeOfCurrentMove
+
+        remaining_times.insert(0,currentRemainingTime)
+
+
+
+    return times, remaining_times
 
 
 def extract_first_coordinate(line):
@@ -70,9 +84,9 @@ def parse_file(file_path):
 
 
     with open(file_path, 'r') as file:
-        times = extract_cumulative_time(file)
+        times, times_remaining = extract_times(file)
         
-    return moveCoordinates, names, times
+    return moveCoordinates, names, times, times_remaining
 
 # # Usage
 # file_path = './ManifestInformation/Balance.txt'
