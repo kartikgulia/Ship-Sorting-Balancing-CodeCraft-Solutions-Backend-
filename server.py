@@ -190,10 +190,15 @@ def storeInfo():
     return jsonify({'success': False, 'message': 'Invalid request method or error occurred'})
 
 
-@app.route('/fetchOperationData', methods=['GET'])
+@app.route('/fetchOperationData', methods=['POST'])
 def returnBalanceInfo():
-    if request.method == 'GET':
+    if request.method == 'POST':
+        
+        data = request.json
+        isBalance = data['isBalance']
 
+        time.sleep(0.5)
+        
         manifestName = getManifestName()
         manifestNamePath = f"./ManifestInformation/{manifestName}"
         headers = ['Position', 'Weight', 'Cargo']
@@ -202,10 +207,21 @@ def returnBalanceInfo():
         cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
         cargo_grid.array_builder()
         # cargo_grid.print()
-        balance = Balance(cargo_grid)
-        balance.Balance("./ManifestInformation/Balance.txt")
-        # balance.CargoGrid.print()
-        # progressionList = balance.ProgressionList
+
+        time.sleep(0.5)
+
+        if(isBalance == 1):
+            balance = Balance(cargo_grid)
+            balance.Balance("ManifestInformation/Balance.txt")
+            # balance.CargoGrid.print()
+            # progressionList = balance.ProgressionList
+        
+        else:
+            
+            performTransfer()
+        
+        time.sleep(0.5)
+            
 
         if (os.path.exists("./ManifestInformation/Balance.txt")):
             moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Balance.txt")
@@ -213,7 +229,15 @@ def returnBalanceInfo():
         else:
             moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Transfer.txt")
 
-        return jsonify({"listOfMoves": moveCoordinates})
+        time.sleep(0.5)
+
+        return jsonify({
+            "moveCoordinates": moveCoordinates,
+            "names" : names,
+            "times" : times,
+            "timesRemaining" : times_remaining
+            
+            })
 
 
 
