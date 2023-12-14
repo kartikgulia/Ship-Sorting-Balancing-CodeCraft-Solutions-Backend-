@@ -79,6 +79,63 @@ def signIn() -> bool:
 
 pathToManifestNameTextFile = "ManifestInformation/manifestName.txt"
 
+@app.route('/checkIfPowerCutHappened', methods = ['GET'])
+
+def powerCutHappened():
+
+    if request.method == 'GET':
+
+        folderExists = os.path.exists('MoveIndexState')
+
+        if(folderExists):
+
+            return jsonify({'powerCutHappened' : True})
+        
+        else:
+            return jsonify({'powerCutHappened' : False})
+        
+    
+
+@app.route('/recoverFromPowerCut', methods= ['GET'])
+
+def recoverFromPowerCut():
+
+    
+    if request.method == "GET":
+        file_path = "MoveIndexState/moveIndex.txt"
+
+        moveNumber : int
+
+        with open(file_path, 'r') as file:
+            moveNumber = int(file.readline().strip())
+
+        print(moveNumber)
+        
+        return jsonify({'moveNumber' : moveNumber})
+
+@app.route('/getOperationDataBackFromPowerCut', methods= ['GET'])
+
+def getOperationDataBackFromPowerCut():
+    
+    if request.method == 'GET':
+
+        if os.path.exists("ManifestInformation/Transfer.txt"):
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "ManifestInformation/Transfer.txt")
+        
+        else:
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "ManifestInformation/Balance.txt")
+            
+        return jsonify({
+            "moveCoordinates": moveCoordinates,
+            "names": names,
+            "times": times,
+            "timesRemaining": times_remaining
+
+        })
+
+
 @app.route('/writeIssueToLog', methods=['POST'])
 def writeIssue():
 
