@@ -8,3 +8,4 @@
 11/20/23: 22:14: Person2 signs in
 11/21/23: 11:19: Person2 signs out
 11/21/23: 11:19: Name signs in
+12/13/23: 20:29: Manifest ShipCase3.txt is opened, there are 6 containers

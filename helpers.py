@@ -8,6 +8,29 @@ from manifestAccess import getManifestName
 # Functions from other files
 
 
+def count_valid_rows(file_path):
+    """
+    Counts the number of rows in the file that do not have 'UNUSED' or 'NAN' 
+    as the only name in the last column. Names like 'Dog NAN' or 'Dog UNUSED' are considered valid.
+    """
+    valid_row_count = 0
+
+    with open(file_path, 'r') as file:
+        for line in file:
+            # Splitting the line and getting the last part which contains the name
+            name = line.split(',')[-1].strip()
+
+            # Check if the name is neither 'UNUSED' nor 'NAN'
+            if name != 'UNUSED' and name != 'NAN':
+                valid_row_count += 1
+
+    return valid_row_count
+
+# You can use this function by passing the file path to it.
+# For example:
+# valid_rows = count_valid_rows("path/to/your/file.txt")
+# print(valid_rows)
+
 
 def parse_balance_file(file_path):
     movements = []
@@ -21,30 +44,36 @@ def parse_balance_file(file_path):
             movements.append([from_coords, to_coords])
     return movements
 
+
 def parse_transfer_file(file_path):
     movements = []
     with open(file_path, 'r') as file:
         for line in file:
             parts = line.strip().split(' ')
-            
+
             # Process from_coords
             from_coord_parts = parts[3].strip('()').split(',')
-            from_coords = [0, 0] if from_coord_parts[0] == "truck" else [int(coord) for coord in from_coord_parts]
+            from_coords = [0, 0] if from_coord_parts[0] == "truck" else [
+                int(coord) for coord in from_coord_parts]
 
             # Process to_coords
             to_coord_parts = parts[5].strip('()').split(',')
-            to_coords = [0, 0] if to_coord_parts[0] == "truck" else [int(coord) for coord in to_coord_parts]
+            to_coords = [0, 0] if to_coord_parts[0] == "truck" else [
+                int(coord) for coord in to_coord_parts]
 
             movements.append([from_coords, to_coords])
     return movements
+
+
 def extract_name(line):
     match = re.search(r'Move (.+?) from', line)
     return match.group(1) if match else None
 
+
 def extract_times(lines):
     times = []
     previous_time = 0
-    
+
     for line in lines:
         match = re.search(r'Time: (\d+) minutes', line)
         if match:
@@ -52,7 +81,6 @@ def extract_times(lines):
             current_time = cumulative_time - previous_time
             times.append(current_time)
             previous_time = cumulative_time
-
 
     remaining_times = []
 
@@ -63,9 +91,7 @@ def extract_times(lines):
 
         currentRemainingTime += timeOfCurrentMove
 
-        remaining_times.insert(0,currentRemainingTime)
-
-
+        remaining_times.insert(0, currentRemainingTime)
 
     return times, remaining_times
 
@@ -75,21 +101,24 @@ def extract_first_coordinate(line):
     if match:
         coord = match.group(1)
         if coord.lower() == "truck":
-            return [0,0]
+            return [0, 0]
         else:
             return [int(c) for c in coord.strip("()").split(',')]
     return None
 
 # Function to extract the second coordinate
+
+
 def extract_second_coordinate(line):
     match = re.search(r'to (\w+|\(\d+,\d+\))', line)
     if match:
         coord = match.group(1)
         if coord.lower() == "truck":
-            return [0,0]
+            return [0, 0]
         else:
             return [int(c) for c in coord.strip("()").split(',')]
     return None
+
 
 def parse_file(file_path):
 
@@ -97,22 +126,19 @@ def parse_file(file_path):
     names = []
     with open(file_path, 'r') as file:
 
-      
-
         for line in file:
             first_coordinate = extract_first_coordinate(line)
             second_coordinate = extract_second_coordinate(line)
 
-            moveCoordinates.append([first_coordinate,second_coordinate])
+            moveCoordinates.append([first_coordinate, second_coordinate])
 
             eachName = extract_name(line)
 
             names.append(eachName)
 
-
     with open(file_path, 'r') as file:
         times, times_remaining = extract_times(file)
-        
+
     return moveCoordinates, names, times, times_remaining
 
 # # Usage
@@ -120,9 +146,8 @@ def parse_file(file_path):
 # movement_list = parse_balance_file(file_path)
 # print(movement_list)
 
-def updateWeightInFile(row,col,stringWeight,file_path):
 
-    
+def updateWeightInFile(row, col, stringWeight, file_path):
 
     # Read the file
     with open(file_path, 'r') as file:
@@ -147,7 +172,7 @@ def updateWeightInFile(row,col,stringWeight,file_path):
 def performTransfer():
     manifestName = getManifestName()
     manifestNamePath = f"ManifestInformation/{manifestName}"
-    
+
     headers = ['Position', 'Weight', 'Cargo']
     pandasDF_for_Manifest = pd.read_csv(
         manifestNamePath, sep=', ', names=headers, engine='python')
@@ -161,10 +186,10 @@ def performTransfer():
 #     try:
 #         with open(file_path, 'r') as file:
 #             lines = file.readlines()
-            
+
 #             # Formatting row and col to match the file's format
-#             row_str = f"{row:02d}" 
-#             col_str = f"{col:02d}"  
+#             row_str = f"{row:02d}"
+#             col_str = f"{col:02d}"
 
 #             # Searching for the correct line
 #             for line in lines:
@@ -173,7 +198,7 @@ def performTransfer():
 #                     start = line.find('{') + 1
 #                     end = line.find('}')
 #                     return line[start:end]
-            
+
 #             return "Not found"  # Return this if the specified row and col are not found
 #     except FileNotFoundError:
 #         return "File not found"
@@ -181,9 +206,6 @@ def performTransfer():
 #         return str(e)  # General error handling
 
 
-    
-
-        
 def get_last_txt_file_name(folder_path):
     """
     This function takes a folder path and returns the name of the last txt file in that folder,

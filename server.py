@@ -16,8 +16,8 @@ from manifestAccess import getManifestGridHelper
 
 from Balance import Balance
 from Transfer import Transfer
-from writeToLog import getLogFileName
-from helpers import parse_file, get_last_txt_file_name, updateWeightInFile, performTransfer
+from writeToLog import getLogFileName, writeToLog
+from helpers import parse_file, get_last_txt_file_name, updateWeightInFile, performTransfer, count_valid_rows
 
 import time
 
@@ -86,6 +86,7 @@ def receiveManifest():
     # 1) Deletes the old manifest
     # 2) Saves the new manifest (save the actual file) and (save the name of the file in manifestName.txt)
 
+    # 3) Writes to the log: "Manifest {name of manifest} is opened, there are {numberOfContainersOnShip} on the ship"
     if request.method == 'POST':
         if request.files:
             uploaded_file = request.files['textfile']
@@ -101,7 +102,9 @@ def receiveManifest():
                     os.makedirs('ManifestForEachMove')
 
                 # Save the uploaded file to a specific directory
-                uploaded_file.save(f'ManifestInformation/{fileName}')
+
+                manifestFilePath = f'ManifestInformation/{fileName}'
+                uploaded_file.save(manifestFilePath)
 
                 # Reset the file pointer to the beginning of the file
                 uploaded_file.seek(0)
@@ -113,7 +116,11 @@ def receiveManifest():
                 with open(pathToManifestNameTextFile, 'w') as name_file:
                     name_file.write(fileName)
 
-                # Perform any additional processing on the file content here
+                # Write to log
+
+                numberOfContainers = count_valid_rows(manifestFilePath)
+                writeToLog(
+                    f"Manifest {fileName} is opened, there are {numberOfContainers} containers")
 
                 return jsonify({'success': True})
         else:
@@ -189,6 +196,7 @@ def storeInfo():
     # Return a response for non-POST requests or in case of an error
     return jsonify({'success': False, 'message': 'Invalid request method or error occurred'})
 
+
 @app.route('/balance', methods=['GET'])
 def returnBalanceInfo():
     if request.method == 'GET':
@@ -208,17 +216,16 @@ def returnBalanceInfo():
 
         move = []
         if (os.path.exists("./ManifestInformation/Balance.txt")):
-            moveCoordinates, names, times, times_remaining = parse_file("./ManifestInformation/Balance.txt")
-
-
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "./ManifestInformation/Balance.txt")
 
         return jsonify({
             "moveCoordinates": moveCoordinates,
-            "names" : names,
-            "times" : times,
-            "timesRemaining" : times_remaining
-            
-            })
+            "names": names,
+            "times": times,
+            "timesRemaining": times_remaining
+
+        })
 
 
 @app.route('/transfer', methods=['GET'])
@@ -227,25 +234,27 @@ def returnTransferInfo():
         time.sleep(1)
         performTransfer()
         time.sleep(1)
-        moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Transfer.txt")
+        moveCoordinates, names, times, times_remaining = parse_file(
+            "ManifestInformation/Transfer.txt")
         time.sleep(1)
         return jsonify({
             "moveCoordinates": moveCoordinates,
-            "names" : names,
-            "times" : times,
-            "timesRemaining" : times_remaining
-            
-            })
-    
+            "names": names,
+            "times": times,
+            "timesRemaining": times_remaining
+
+        })
+
+
 @app.route('/fetchOperationData', methods=['POST'])
 def returnOperationData():
     if request.method == 'POST':
-        
+
         data = request.json
         isBalance = data['isBalance']
 
         time.sleep(0.5)
-        
+
         manifestName = getManifestName()
         manifestNamePath = f"./ManifestInformation/{manifestName}"
         headers = ['Position', 'Weight', 'Cargo']
@@ -257,24 +266,25 @@ def returnOperationData():
 
         time.sleep(0.5)
 
-        if(isBalance == 1):
+        if (isBalance == 1):
             balance = Balance(cargo_grid)
             balance.Balance("ManifestInformation/Balance.txt")
             # balance.CargoGrid.print()
             # progressionList = balance.ProgressionList
-        
+
         else:
-            
+
             performTransfer()
-        
+
         time.sleep(0.5)
-            
 
         if (os.path.exists("./ManifestInformation/Balance.txt")):
-            moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Balance.txt")
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "ManifestInformation/Balance.txt")
 
         else:
-            moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Transfer.txt")
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "ManifestInformation/Transfer.txt")
 
         time.sleep(0.5)
 
@@ -283,9 +293,8 @@ def returnOperationData():
             # "names" : names,
             # "times" : times,
             # "timesRemaining" : times_remaining
-            
-            })
 
+        })
 
 
 @app.route('/updateWeight', methods=['POST'])
@@ -409,7 +418,7 @@ def downloadUpdatedManifest():
 
     file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
     print(file_to_send)
-    
+
     time.sleep(0.5)
 
     if os.path.exists(file_to_send):
@@ -451,11 +460,10 @@ def deleteFiles():
     # if(os.path.exists(balancePath)):
     #     with open(balancePath, "w") as balance_file:
     #             balance_file.truncate(0)  # This will remove all text from the file
-    
+
     # else:
     #     with open("./ManifestInformation/Transfer.txt", "w") as transfer_file:
     #         transfer_file.truncate(0)
-
 
     return jsonify({'success': True})
 
