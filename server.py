@@ -151,9 +151,9 @@ def getCurrentMoveManifestGrid():
 
         moveNum = data['moveNum']
         manifestPath = f"ManifestForEachMove/ManifestMove{moveNum}"
-        time.sleep(0.5)
+        # time.sleep(0.5)
         grid_data = getManifestGridHelper(manifest_path=manifestPath)
-        time.sleep(0.5)
+        # time.sleep(0.5)
         return jsonify({'success': True, 'grid': grid_data})
 
 
@@ -189,9 +189,44 @@ def storeInfo():
     # Return a response for non-POST requests or in case of an error
     return jsonify({'success': False, 'message': 'Invalid request method or error occurred'})
 
-
-@app.route('/fetchOperationData', methods=['POST'])
+@app.route('/balance', methods=['GET'])
 def returnBalanceInfo():
+    if request.method == 'GET':
+
+        manifestName = getManifestName()
+        manifestNamePath = f"./ManifestInformation/{manifestName}"
+        headers = ['Position', 'Weight', 'Cargo']
+        pandasDF_for_Manifest = pd.read_csv(
+            manifestNamePath, sep=', ', names=headers, engine='python')
+        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
+        cargo_grid.array_builder()
+        # cargo_grid.print()
+        balance = Balance(cargo_grid)
+        balance.Balance("./ManifestInformation/Balance.txt")
+        # balance.CargoGrid.print()
+        # progressionList = balance.ProgressionList
+
+        move = []
+        if (os.path.exists("./ManifestInformation/Balance.txt")):
+            moves, a, b, c= parse_file("./ManifestInformation/Balance.txt")
+
+
+
+        return jsonify({"moveCoordinates": moves})
+
+
+@app.route('/transfer', methods=['GET'])
+def returnTransferInfo():
+    if request.method == 'GET':
+        # time.sleep(1)
+        performTransfer()
+        # time.sleep(1)
+        moves, a, b, c = parse_file("ManifestInformation/Transfer.txt")
+        # time.sleep(1)
+        return jsonify({"moveCoordinates": moves})
+    
+@app.route('/fetchOperationData', methods=['POST'])
+def returnOperationData():
     if request.method == 'POST':
         
         data = request.json
@@ -233,9 +268,9 @@ def returnBalanceInfo():
 
         return jsonify({
             "moveCoordinates": moveCoordinates,
-            "names" : names,
-            "times" : times,
-            "timesRemaining" : times_remaining
+            # "names" : names,
+            # "times" : times,
+            # "timesRemaining" : times_remaining
             
             })
 
