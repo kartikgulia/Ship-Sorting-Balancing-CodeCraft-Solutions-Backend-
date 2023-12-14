@@ -353,55 +353,6 @@ def returnTransferInfo():
         })
 
 
-@app.route('/fetchOperationData', methods=['POST'])
-def returnOperationData():
-    if request.method == 'POST':
-
-        data = request.json
-        isBalance = data['isBalance']
-
-        time.sleep(0.5)
-
-        manifestName = getManifestName()
-        manifestNamePath = f"./ManifestInformation/{manifestName}"
-        headers = ['Position', 'Weight', 'Cargo']
-        pandasDF_for_Manifest = pd.read_csv(
-            manifestNamePath, sep=', ', names=headers, engine='python')
-        cargo_grid = Cargo_Grid(pandasDF_for_Manifest)
-        cargo_grid.array_builder()
-        # cargo_grid.print()
-
-        time.sleep(0.5)
-
-        if (isBalance == 1):
-            balance = Balance(cargo_grid)
-            balance.Balance("ManifestInformation/Balance.txt")
-            # balance.CargoGrid.print()
-            # progressionList = balance.ProgressionList
-
-        else:
-
-            performTransfer()
-
-        time.sleep(0.5)
-
-        if (os.path.exists("./ManifestInformation/Balance.txt")):
-            moveCoordinates, names, times, times_remaining = parse_file(
-                "ManifestInformation/Balance.txt")
-
-        else:
-            moveCoordinates, names, times, times_remaining = parse_file(
-                "ManifestInformation/Transfer.txt")
-
-        time.sleep(0.5)
-
-        return jsonify({
-            "moveCoordinates": moveCoordinates,
-            # "names" : names,
-            # "times" : times,
-            # "timesRemaining" : times_remaining
-
-        })
 
 
 @app.route('/updateWeight', methods=['POST'])
