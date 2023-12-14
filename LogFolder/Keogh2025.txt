@@ -52,3 +52,52 @@
 12/14/23: 01:34: "Cow" is offloaded
 12/14/23: 01:34: "r" is onloaded
 12/14/23: 01:34: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 01:37: Manifest ShipCase2.txt is opened, there are 4 containers
+12/14/23: 01:41: Manifest ShipCase1.txt is opened, there are 2 containers
+12/14/23: 01:42: Manifest ShipCase1.txt is opened, there are 2 containers
+12/14/23: 01:49: "UNUSEd" is onloaded
+12/14/23: 01:49: "NAa" is onloaded
+12/14/23: 01:49: "fjdskfjdsfjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj" is onloaded
+12/14/23: 01:49: "fjdskfjdsfjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjfjdskfjdsfjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj" is onloaded
+12/14/23: 01:49: Finished a Cycle. Manifest ShipCase1_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 01:51: I have a big issue
+12/14/23: 01:52: Manifest ShipCase2.txt is opened, there are 4 containers
+12/14/23: 01:58: "Cat" is offloaded
+12/14/23: 01:58: "People" is onloaded
+12/14/23: 01:58: "Ram" is offloaded
+12/14/23: 01:59: "Owl" is offloaded
+12/14/23: 01:59: Finished a Cycle. Manifest ShipCase2_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 01:59: Manifest ShipCase2.txt is opened, there are 4 containers
+12/14/23: 02:09: Finished a Cycle. Manifest ShipCase2_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:09: Manifest ShipCase2.txt is opened, there are 4 containers
+12/14/23: 02:10: Finished a Cycle. Manifest ShipCase2_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:10: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:12: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:12: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:13: "Name1" is onloaded
+12/14/23: 02:13: "Name2" is onloaded
+12/14/23: 02:13: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:13: Manifest ShipCase3_OUTBOUND (4).txt is opened, there are 8 containers
+12/14/23: 02:15: Finished a Cycle. Manifest ShipCase3_OUTBOUND (4)_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:16: Manifest ShipCase3_OUTBOUND (4)_OUTBOUND.txt is opened, there are 8 containers
+12/14/23: 02:16: Finished a Cycle. Manifest ShipCase3_OUTBOUND (4)_OUTBOUND_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:16: Manifest ShipCase3_OUTBOUND (4).txt is opened, there are 8 containers
+12/14/23: 02:17: Finished a Cycle. Manifest ShipCase3_OUTBOUND (4)_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:17: Manifest ShipCase3_OUTBOUND (4).txt is opened, there are 8 containers
+12/14/23: 02:18: Finished a Cycle. Manifest ShipCase3_OUTBOUND (4)_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:18: Manifest ShipCase3_OUTBOUND (4).txt is opened, there are 8 containers
+12/14/23: 02:19: Finished a Cycle. Manifest ShipCase3_OUTBOUND (4)_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:19: Manifest ShipCase3_OUTBOUND (4).txt is opened, there are 8 containers
+12/14/23: 02:21: Finished a Cycle. Manifest ShipCase3_OUTBOUND (4)_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:22: Manifest ShipCase1.txt is opened, there are 2 containers
+12/14/23: 02:27: "Dog" is offloaded
+12/14/23: 02:27: "fd" is onloaded
+12/14/23: 02:27: Finished a Cycle. Manifest ShipCase1_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:27: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:38: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:38: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:39: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:39: Manifest ShipCase2.txt is opened, there are 4 containers
+12/14/23: 02:39: "Dog" is offloaded
+12/14/23: 02:39: "jhjh" is onloaded
+12/14/23: 02:40: "jh" is onloaded
