@@ -16,8 +16,8 @@ from manifestAccess import getManifestGridHelper
 
 from Balance import Balance
 from Transfer import Transfer
-from writeToLog import getLogFileName
-from helpers import parse_balance_file, parse_transfer_file, get_last_txt_file_name, updateWeightInFile, performTransfer
+from writeToLog import getLogFileName, writeToLog
+from helpers import parse_file, get_last_txt_file_name, updateWeightInFile, performTransfer, count_valid_rows
 
 import time
 
@@ -79,6 +79,93 @@ def signIn() -> bool:
 
 pathToManifestNameTextFile = "ManifestInformation/manifestName.txt"
 
+@app.route('/checkIfPowerCutHappened', methods = ['GET'])
+
+def powerCutHappened():
+
+    if request.method == 'GET':
+
+        folderExists = os.path.exists('MoveIndexState')
+
+        if(folderExists):
+
+            return jsonify({'powerCutHappened' : True})
+        
+        else:
+            return jsonify({'powerCutHappened' : False})
+        
+    
+
+@app.route('/recoverFromPowerCut', methods= ['GET'])
+
+def recoverFromPowerCut():
+
+    
+    if request.method == "GET":
+        file_path = "MoveIndexState/moveIndex.txt"
+
+        moveNumber : int
+
+        with open(file_path, 'r') as file:
+            moveNumber = int(file.readline().strip())
+
+        print(moveNumber)
+        
+        return jsonify({'moveNumber' : moveNumber})
+
+@app.route('/saveCurrentIndexIntoStateFile', methods = ['POST'])
+
+def saveCurrentIndexIntoStateFile():
+
+    if request.method == 'POST':
+
+        data = request.json
+
+        currentIndex = data['currentIndex']
+
+        print(currentIndex)
+
+        with open('MoveIndexState/moveIndex.txt', 'w') as file:
+            file.write(str(currentIndex))
+
+        return jsonify({'success': True})
+
+@app.route('/getOperationDataBackFromPowerCut', methods= ['GET'])
+
+def getOperationDataBackFromPowerCut():
+    
+    if request.method == 'GET':
+
+        if os.path.exists("ManifestInformation/Transfer.txt"):
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "ManifestInformation/Transfer.txt")
+        
+        else:
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "ManifestInformation/Balance.txt")
+            
+        return jsonify({
+            "moveCoordinates": moveCoordinates,
+            "names": names,
+            "times": times,
+            "timesRemaining": times_remaining
+
+        })
+
+
+@app.route('/writeIssueToLog', methods=['POST'])
+def writeIssue():
+
+    if request.method == "POST":
+        data = request.json
+
+        issueText = data['issueText']
+
+        writeToLog(issueText)
+
+        return jsonify({'success': True})
+
+
 
 @app.route('/sendManifest', methods=['POST'])
 def receiveManifest():
@@ -86,6 +173,7 @@ def receiveManifest():
     # 1) Deletes the old manifest
     # 2) Saves the new manifest (save the actual file) and (save the name of the file in manifestName.txt)
 
+    # 3) Writes to the log: "Manifest {name of manifest} is opened, there are {numberOfContainersOnShip} on the ship"
     if request.method == 'POST':
         if request.files:
             uploaded_file = request.files['textfile']
@@ -101,7 +189,9 @@ def receiveManifest():
                     os.makedirs('ManifestForEachMove')
 
                 # Save the uploaded file to a specific directory
-                uploaded_file.save(f'ManifestInformation/{fileName}')
+
+                manifestFilePath = f'ManifestInformation/{fileName}'
+                uploaded_file.save(manifestFilePath)
 
                 # Reset the file pointer to the beginning of the file
                 uploaded_file.seek(0)
@@ -113,7 +203,11 @@ def receiveManifest():
                 with open(pathToManifestNameTextFile, 'w') as name_file:
                     name_file.write(fileName)
 
-                # Perform any additional processing on the file content here
+                # Write to log
+
+                numberOfContainers = count_valid_rows(manifestFilePath)
+                writeToLog(
+                    f"Manifest {fileName} is opened, there are {numberOfContainers} containers")
 
                 return jsonify({'success': True})
         else:
@@ -207,24 +301,58 @@ def returnBalanceInfo():
         # balance.CargoGrid.print()
         # progressionList = balance.ProgressionList
 
-        move = []
+
         if (os.path.exists("./ManifestInformation/Balance.txt")):
-            moves = parse_balance_file("./ManifestInformation/Balance.txt")
+            moveCoordinates, names, times, times_remaining = parse_file(
+                "./ManifestInformation/Balance.txt")
 
+        file_path = 'MoveIndexState/moveIndex.txt'
 
+        # Ensuring the directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        return jsonify({"listOfMoves": moves})
+        # Writing the number 0 to the file
+        with open(file_path, 'w') as file:
+            file.write('0')
+
+        return jsonify({
+            "moveCoordinates": moveCoordinates,
+            "names": names,
+            "times": times,
+            "timesRemaining": times_remaining
+
+        })
 
 
 @app.route('/transfer', methods=['GET'])
 def returnTransferInfo():
     if request.method == 'GET':
-        time.sleep(1)
+        # time.sleep(1)
         performTransfer()
-        time.sleep(1)
-        moves = parse_transfer_file("ManifestInformation/Transfer.txt")
-        time.sleep(1)
-        return jsonify({"listOfMoves": moves})
+        # time.sleep(1)
+        moveCoordinates, names, times, times_remaining = parse_file(
+            "ManifestInformation/Transfer.txt")
+        # time.sleep(1)
+
+        # create move state 
+
+        file_path = 'MoveIndexState/moveIndex.txt'
+
+        # Ensuring the directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        # Writing the number 0 to the file
+        with open(file_path, 'w') as file:
+            file.write('0')
+        return jsonify({
+            "moveCoordinates": moveCoordinates,
+            "names": names,
+            "times": times,
+            "timesRemaining": times_remaining
+
+        })
+
+
 
 
 @app.route('/updateWeight', methods=['POST'])
@@ -298,15 +426,23 @@ def propagateWeights():
         for key, value in locationToLoadWeightsDictionary.items():
 
             currentMoveFromPosition = (fromRow, fromCol)
+            weight = value
 
             if currentMoveFromPosition in locationToLoadWeightsDictionary:  # we're moving a "loaded container"
+                
+                # update the weight
+                updateWeightInFile(toRow,toCol,weight,nextManifestFile)
 
-                print()
+                # get rid of the fromRow and toCol. Replace with toRow, toCol
+
+                del locationToLoadWeightsDictionary[(fromRow, fromCol)]
+
+                locationToLoadWeightsDictionary[(toCol,toRow)] = weight
 
             else:   # not moving, just propagate the weight
 
                 # get the weight in the current move
-                weight = value
+                
                 # print(weight)
 
                 # send weight to the next file
@@ -316,19 +452,73 @@ def propagateWeights():
     return {"status": "success"}
 
 
+@app.route('/writeTransferToLog', methods=['POST'])
+def writeTransferToLog():
+
+    if (request.method == 'POST'):
+
+        data = request.json
+
+        logText = data['logText']
+
+        writeToLog(logText)
+
+        return {"status": "success"}
+
+
+
+
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
-    log_file = getLogFileName()
-    log_filename = os.path.basename(log_file)
 
-    if os.path.exists(log_file):
-        response = send_file(log_file, as_attachment=True)
-        response.headers['Content-Disposition'] = 'attachment; filename=\"{}\"'.format(
-            log_filename)
-        return response
-    else:
-        return jsonify({'success': False, 'message': 'Log file not found'})
+    if request.method == 'GET':
+        log_file = getLogFileName()
+        
 
+        
+        if os.path.exists(log_file):
+            return send_file(log_file, as_attachment=True)
+        else:
+            return "File not found", 404
+        
+   
+@app.route('/removeLog' , methods=['GET'])
+def removeLogAndAddNewOne():
+
+    if request.method == 'GET':
+        log_file = getLogFileName()
+        log_number = ''.join(filter(str.isdigit, log_file))
+        print(log_number)
+
+        # Remove the current log
+
+        file_path = log_file
+
+        time.sleep(0.3)
+        if os.path.exists(file_path):
+        # Remove the file
+            os.remove(file_path)
+            print(f"File '{file_path}' has been removed.")
+        else:
+            print(f"File '{file_path}' does not exist.")
+
+
+        # Add one for the next year
+
+        nextYearNumber = str(int(log_number) + 1)
+        newLogFileName = f"Keogh{nextYearNumber}.txt"
+        folder_path = "LogFolder"
+
+        # Constructing the full file path
+        full_file_path = os.path.join(folder_path, newLogFileName)
+
+        # Creating the file in the specified directory
+        with open(full_file_path, 'w') as file:
+            pass
+
+        print(f"New log file '{newLogFileName}' has been created in '{folder_path}'.")
+        
+        return jsonify({"status": "success"})
 
 @app.route('/downloadUpdatedManifest', methods=['GET'])
 def downloadUpdatedManifest():
@@ -348,14 +538,28 @@ def downloadUpdatedManifest():
 
     file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
     print(file_to_send)
-    
-    time.sleep(0.5)
 
+    # time.sleep(0.5)
+
+
+    # write to log : cycle finished
+
+    cycleFinishedText = f"Finished a Cycle. Manifest {manifest_name}_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed."
+
+    writeToLog(cycleFinishedText)
+    
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
     else:
         return "File not found", 404
 
+
+@app.route('/getLogFileName')
+def getLogName():
+
+    log_file = getLogFileName()
+    file_to_send = os.path.basename(log_file)
+    return jsonify({'fileName' : file_to_send})
 
 @app.route('/getOutboundName', methods=['GET'])
 def getOutboundName():
@@ -374,7 +578,7 @@ def getOutboundName():
 def deleteFiles():
 
     dir_names = ["TransferInformation",
-                 "ManifestInformation", "ManifestForEachMove"]
+                 "ManifestInformation", "ManifestForEachMove", "MoveIndexState"]
 
     for dir_name in dir_names:
         if os.path.exists(dir_name) and os.path.isdir(dir_name):
@@ -390,11 +594,10 @@ def deleteFiles():
     # if(os.path.exists(balancePath)):
     #     with open(balancePath, "w") as balance_file:
     #             balance_file.truncate(0)  # This will remove all text from the file
-    
+
     # else:
     #     with open("./ManifestInformation/Transfer.txt", "w") as transfer_file:
     #         transfer_file.truncate(0)
-
 
     return jsonify({'success': True})
 
