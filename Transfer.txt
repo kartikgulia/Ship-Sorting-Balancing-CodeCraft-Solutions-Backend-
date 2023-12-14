@@ -1,4 +1,4 @@
-Move Cat from (2,1) to truck, Time: 9 minutes
+Move name1 from (2,1) to truck, Time: 9 minutes
 Move Doe from (2,2) to truck, Time: 29 minutes
 Move Ewe from (1,1) to truck, Time: 49 minutes
 Move Cow from (1,2) to truck, Time: 71 minutes

@@ -386,6 +386,20 @@ def propagateWeights():
     return {"status": "success"}
 
 
+@app.route('/writeTransferToLog', methods=['POST'])
+def writeTransferToLog():
+
+    if (request.method == 'POST'):
+
+        data = request.json
+
+        logText = data['logText']
+
+        writeToLog(logText)
+
+        return {"status": "success"}
+
+
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
     log_file = getLogFileName()

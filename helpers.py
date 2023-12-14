@@ -32,39 +32,6 @@ def count_valid_rows(file_path):
 # print(valid_rows)
 
 
-def parse_balance_file(file_path):
-    movements = []
-    with open(file_path, 'r') as file:
-        for line in file:
-            parts = line.strip().split(' ')
-            from_coords = [int(coord)
-                           for coord in parts[3].strip('()').split(',')]
-            to_coords = [int(coord)
-                         for coord in parts[5].strip('()').split(',')]
-            movements.append([from_coords, to_coords])
-    return movements
-
-
-def parse_transfer_file(file_path):
-    movements = []
-    with open(file_path, 'r') as file:
-        for line in file:
-            parts = line.strip().split(' ')
-
-            # Process from_coords
-            from_coord_parts = parts[3].strip('()').split(',')
-            from_coords = [0, 0] if from_coord_parts[0] == "truck" else [
-                int(coord) for coord in from_coord_parts]
-
-            # Process to_coords
-            to_coord_parts = parts[5].strip('()').split(',')
-            to_coords = [0, 0] if to_coord_parts[0] == "truck" else [
-                int(coord) for coord in to_coord_parts]
-
-            movements.append([from_coords, to_coords])
-    return movements
-
-
 def extract_name(line):
     match = re.search(r'Move (.+?) from', line)
     return match.group(1) if match else None
