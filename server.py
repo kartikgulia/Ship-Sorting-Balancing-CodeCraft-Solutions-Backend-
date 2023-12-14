@@ -151,9 +151,9 @@ def getCurrentMoveManifestGrid():
 
         moveNum = data['moveNum']
         manifestPath = f"ManifestForEachMove/ManifestMove{moveNum}"
-        # time.sleep(0.5)
+        time.sleep(0.5)
         grid_data = getManifestGridHelper(manifest_path=manifestPath)
-        # time.sleep(0.5)
+        time.sleep(0.5)
         return jsonify({'success': True, 'grid': grid_data})
 
 
@@ -208,22 +208,34 @@ def returnBalanceInfo():
 
         move = []
         if (os.path.exists("./ManifestInformation/Balance.txt")):
-            moves, a, b, c= parse_file("./ManifestInformation/Balance.txt")
+            moveCoordinates, names, times, times_remaining = parse_file("./ManifestInformation/Balance.txt")
 
 
 
-        return jsonify({"moveCoordinates": moves})
+        return jsonify({
+            "moveCoordinates": moveCoordinates,
+            "names" : names,
+            "times" : times,
+            "timesRemaining" : times_remaining
+            
+            })
 
 
 @app.route('/transfer', methods=['GET'])
 def returnTransferInfo():
     if request.method == 'GET':
-        # time.sleep(1)
+        time.sleep(1)
         performTransfer()
-        # time.sleep(1)
-        moves, a, b, c = parse_file("ManifestInformation/Transfer.txt")
-        # time.sleep(1)
-        return jsonify({"moveCoordinates": moves})
+        time.sleep(1)
+        moveCoordinates, names, times, times_remaining = parse_file("ManifestInformation/Transfer.txt")
+        time.sleep(1)
+        return jsonify({
+            "moveCoordinates": moveCoordinates,
+            "names" : names,
+            "times" : times,
+            "timesRemaining" : times_remaining
+            
+            })
     
 @app.route('/fetchOperationData', methods=['POST'])
 def returnOperationData():
