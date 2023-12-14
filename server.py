@@ -435,6 +435,13 @@ def downloadUpdatedManifest():
 
     time.sleep(0.5)
 
+
+    # write to log : cycle finished
+
+    cycleFinishedText = f"Finished a Cycle. Manifest {file_to_send} was written to desktop, and a reminder pop-up to operator to send file was displayed."
+
+    writeToLog(cycleFinishedText)
+    
     if os.path.exists(file_to_send):
         return send_file(file_to_send, as_attachment=True)
     else:
