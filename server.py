@@ -113,6 +113,23 @@ def recoverFromPowerCut():
         
         return jsonify({'moveNumber' : moveNumber})
 
+@app.route('/saveCurrentIndexIntoStateFile', methods = ['POST'])
+
+def saveCurrentIndexIntoStateFile():
+
+    if request.method == 'POST':
+
+        data = request.json
+
+        currentIndex = data['currentIndex']
+
+        print(currentIndex)
+
+        with open('MoveIndexState/moveIndex.txt', 'w') as file:
+            file.write(str(currentIndex))
+
+        return jsonify({'success': True})
+
 @app.route('/getOperationDataBackFromPowerCut', methods= ['GET'])
 
 def getOperationDataBackFromPowerCut():
@@ -284,10 +301,19 @@ def returnBalanceInfo():
         # balance.CargoGrid.print()
         # progressionList = balance.ProgressionList
 
-        move = []
+
         if (os.path.exists("./ManifestInformation/Balance.txt")):
             moveCoordinates, names, times, times_remaining = parse_file(
                 "./ManifestInformation/Balance.txt")
+
+        file_path = 'MoveIndexState/moveIndex.txt'
+
+        # Ensuring the directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        # Writing the number 0 to the file
+        with open(file_path, 'w') as file:
+            file.write('0')
 
         return jsonify({
             "moveCoordinates": moveCoordinates,
@@ -307,6 +333,17 @@ def returnTransferInfo():
         moveCoordinates, names, times, times_remaining = parse_file(
             "ManifestInformation/Transfer.txt")
         # time.sleep(1)
+
+        # create move state 
+
+        file_path = 'MoveIndexState/moveIndex.txt'
+
+        # Ensuring the directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        # Writing the number 0 to the file
+        with open(file_path, 'w') as file:
+            file.write('0')
         return jsonify({
             "moveCoordinates": moveCoordinates,
             "names": names,
@@ -582,7 +619,7 @@ def getOutboundName():
 def deleteFiles():
 
     dir_names = ["TransferInformation",
-                 "ManifestInformation", "ManifestForEachMove"]
+                 "ManifestInformation", "ManifestForEachMove", "MoveIndexState"]
 
     for dir_name in dir_names:
         if os.path.exists(dir_name) and os.path.isdir(dir_name):
