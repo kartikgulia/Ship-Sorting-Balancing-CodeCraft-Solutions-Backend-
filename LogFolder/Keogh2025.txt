@@ -48,3 +48,7 @@
 12/14/23: 01:31: "Cat" is offloaded
 12/14/23: 01:32: "Name1" is onloaded
 12/14/23: 01:32: Finished a Cycle. Manifest ShipCase4_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 01:33: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 01:34: "Cow" is offloaded
+12/14/23: 01:34: "r" is onloaded
+12/14/23: 01:34: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
