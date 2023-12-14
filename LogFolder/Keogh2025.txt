@@ -101,3 +101,72 @@
 12/14/23: 02:39: "Dog" is offloaded
 12/14/23: 02:39: "jhjh" is onloaded
 12/14/23: 02:40: "jh" is onloaded
+12/14/23: 02:41: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:41: "Dog" is offloaded
+12/14/23: 02:42: "f" is onloaded
+12/14/23: 02:42: "Rat" is offloaded
+12/14/23: 02:42: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:42: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:42: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:44: "Dog" is offloaded
+12/14/23: 02:44: "yau" is onloaded
+12/14/23: 02:44: "Rat" is offloaded
+12/14/23: 02:44: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:44: Manifest ShipCase3_OUTBOUND (4)_OUTBOUND (3).txt is opened, there are 8 containers
+12/14/23: 02:44: Manifest ShipCase3.txt is opened, there are 6 containers
+12/14/23: 02:45: "Hello" is onloaded
+12/14/23: 02:45: "NANa" is onloaded
+12/14/23: 02:45: Finished a Cycle. Manifest ShipCase3_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 02:48: Manifest ShipCase5.txt is opened, there are 5 containers
+12/14/23: 02:48: "Cat" is offloaded
+12/14/23: 02:48: "name1" is onloaded
+12/14/23: 02:48: "Dog" is offloaded
+12/14/23: 02:48: "n2" is onloaded
+12/14/23: 02:50: "Pig" is offloaded
+12/14/23: 03:02: "name1" is onloaded
+12/14/23: 03:02: "Dog" is offloaded
+12/14/23: 03:04: "n2" is onloaded
+12/14/23: 03:04: "Pig" is offloaded
+12/14/23: 03:09: "Cat" is offloaded
+12/14/23: 03:10: "name1" is onloaded
+12/14/23: 03:14: "name1" is onloaded
+12/14/23: 03:14: "Dog" is offloaded
+12/14/23: 03:14: "n2" is onloaded
+12/14/23: 03:14: "Pig" is offloaded
+12/14/23: 03:14: "n3" is onloaded
+12/14/23: 03:14: "Hen" is offloaded
+12/14/23: 03:14: "n4" is onloaded
+12/14/23: 03:14: "Rat" is offloaded
+12/14/23: 03:14: "n5" is onloaded
+12/14/23: 03:14: Finished a Cycle. Manifest ShipCase5_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 03:15: Manifest ShipCase5.txt is opened, there are 5 containers
+12/14/23: 03:15: "n1" is onloaded
+12/14/23: 03:15: "n2" is onloaded
+12/14/23: 03:15: "n3" is onloaded
+12/14/23: 03:15: "n4" is onloaded
+12/14/23: 03:15: "n5" is onloaded
+12/14/23: 03:15: Finished a Cycle. Manifest ShipCase5_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 03:15: Manifest ShipCase4.txt is opened, there are 7 containers
+12/14/23: 03:16: Manifest ShipCase5.txt is opened, there are 5 containers
+12/14/23: 03:16: Manifest ShipCase5.txt is opened, there are 5 containers
+12/14/23: 03:17: "n1" is onloaded
+12/14/23: 03:17: "n2" is onloaded
+12/14/23: 03:17: "n3" is onloaded
+12/14/23: 03:17: "n4" is onloaded
+12/14/23: 03:17: "n5" is onloaded
+12/14/23: 03:17: Finished a Cycle. Manifest ShipCase5_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 03:17: Manifest ShipCase4.txt is opened, there are 7 containers
+12/14/23: 03:17: Manifest ShipCase5.txt is opened, there are 5 containers
+12/14/23: 03:17: "Cat" is offloaded
+12/14/23: 03:17: "n1" is onloaded
+12/14/23: 03:17: "Dog" is offloaded
+12/14/23: 03:18: "n2" is onloaded
+12/14/23: 03:18: "Pig" is offloaded
+12/14/23: 03:18: "n3" is onloaded
+12/14/23: 03:18: "Hen" is offloaded
+12/14/23: 03:18: "n4" is onloaded
+12/14/23: 03:18: "Rat" is offloaded
+12/14/23: 03:18: "n5" is onloaded
+12/14/23: 03:18: Finished a Cycle. Manifest ShipCase5_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 03:18: Manifest ShipCase4.txt is opened, there are 7 containers
+12/14/23: 03:18: Finished a Cycle. Manifest ShipCase4_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.

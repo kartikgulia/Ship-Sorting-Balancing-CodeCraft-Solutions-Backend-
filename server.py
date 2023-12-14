@@ -475,15 +475,23 @@ def propagateWeights():
         for key, value in locationToLoadWeightsDictionary.items():
 
             currentMoveFromPosition = (fromRow, fromCol)
+            weight = value
 
             if currentMoveFromPosition in locationToLoadWeightsDictionary:  # we're moving a "loaded container"
+                
+                # update the weight
+                updateWeightInFile(toRow,toCol,weight,nextManifestFile)
 
-                print()
+                # get rid of the fromRow and toCol. Replace with toRow, toCol
+
+                del locationToLoadWeightsDictionary[(fromRow, fromCol)]
+
+                locationToLoadWeightsDictionary[(toCol,toRow)] = weight
 
             else:   # not moving, just propagate the weight
 
                 # get the weight in the current move
-                weight = value
+                
                 # print(weight)
 
                 # send weight to the next file
