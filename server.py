@@ -413,19 +413,59 @@ def writeTransferToLog():
         return {"status": "success"}
 
 
+
+
 @app.route('/downloadLog', methods=['GET'])
 def downloadLog():
-    log_file = getLogFileName()
-    log_filename = os.path.basename(log_file)
 
-    if os.path.exists(log_file):
-        response = send_file(log_file, as_attachment=True)
-        response.headers['Content-Disposition'] = 'attachment; filename=\"{}\"'.format(
-            log_filename)
-        return response
-    else:
-        return jsonify({'success': False, 'message': 'Log file not found'})
+    if request.method == 'GET':
+        log_file = getLogFileName()
+        
 
+        
+        if os.path.exists(log_file):
+            return send_file(log_file, as_attachment=True)
+        else:
+            return "File not found", 404
+        
+   
+@app.route('/removeLog' , methods=['GET'])
+def removeLogAndAddNewOne():
+
+    if request.method == 'GET':
+        log_file = getLogFileName()
+        log_number = ''.join(filter(str.isdigit, log_file))
+        print(log_number)
+
+        # Remove the current log
+
+        file_path = log_file
+
+        time.sleep(0.3)
+        if os.path.exists(file_path):
+        # Remove the file
+            os.remove(file_path)
+            print(f"File '{file_path}' has been removed.")
+        else:
+            print(f"File '{file_path}' does not exist.")
+
+
+        # Add one for the next year
+
+        nextYearNumber = str(int(log_number) + 1)
+        newLogFileName = f"Keogh{nextYearNumber}.txt"
+        folder_path = "LogFolder"
+
+        # Constructing the full file path
+        full_file_path = os.path.join(folder_path, newLogFileName)
+
+        # Creating the file in the specified directory
+        with open(full_file_path, 'w') as file:
+            pass
+
+        print(f"New log file '{newLogFileName}' has been created in '{folder_path}'.")
+        
+        return jsonify({"status": "success"})
 
 @app.route('/downloadUpdatedManifest', methods=['GET'])
 def downloadUpdatedManifest():
@@ -460,6 +500,13 @@ def downloadUpdatedManifest():
     else:
         return "File not found", 404
 
+
+@app.route('/getLogFileName')
+def getLogName():
+
+    log_file = getLogFileName()
+    file_to_send = os.path.basename(log_file)
+    return jsonify({'fileName' : file_to_send})
 
 @app.route('/getOutboundName', methods=['GET'])
 def getOutboundName():
