@@ -79,6 +79,19 @@ def signIn() -> bool:
 
 pathToManifestNameTextFile = "ManifestInformation/manifestName.txt"
 
+@app.route('/writeIssueToLog', methods=['POST'])
+def writeIssue():
+
+    if request.method == "POST":
+        data = request.json
+
+        issueText = data['issueText']
+
+        writeToLog(issueText)
+
+        return jsonify({'success': True})
+
+
 
 @app.route('/sendManifest', methods=['POST'])
 def receiveManifest():
@@ -231,12 +244,12 @@ def returnBalanceInfo():
 @app.route('/transfer', methods=['GET'])
 def returnTransferInfo():
     if request.method == 'GET':
-        time.sleep(1)
+        # time.sleep(1)
         performTransfer()
-        time.sleep(1)
+        # time.sleep(1)
         moveCoordinates, names, times, times_remaining = parse_file(
             "ManifestInformation/Transfer.txt")
-        time.sleep(1)
+        # time.sleep(1)
         return jsonify({
             "moveCoordinates": moveCoordinates,
             "names": names,
@@ -433,12 +446,12 @@ def downloadUpdatedManifest():
     file_to_send = f"ManifestInformation/{manifest_name}_OUTBOUND.txt"
     print(file_to_send)
 
-    time.sleep(0.5)
+    # time.sleep(0.5)
 
 
     # write to log : cycle finished
 
-    cycleFinishedText = f"Finished a Cycle. Manifest {file_to_send} was written to desktop, and a reminder pop-up to operator to send file was displayed."
+    cycleFinishedText = f"Finished a Cycle. Manifest {manifest_name}_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed."
 
     writeToLog(cycleFinishedText)
     
