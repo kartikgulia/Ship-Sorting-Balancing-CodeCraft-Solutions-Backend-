@@ -20,9 +20,16 @@ print(transfer.UnloadDF)
 print(transfer.UnloadList)
 for x in transfer.LoadList:
     print(x.name)
+
 """
 
-manifest = "TransferTestCase.txt"
+# testing transfer
+# manifest = "TransferTestCase.txt"
+# manifest = "ShipCase1.txt"
+# manifest = "ShipCase2.txt"
+# manifest = "ShipCase3.txt"
+manifest = "SIFTCase.txt"
+
 headers = ['Position', 'Weight', 'Cargo']
 pandasDF_for_Manifest = pd.read_csv(
     manifest, sep=', ', names=headers, engine='python')
@@ -42,7 +49,7 @@ transfer = Transfer(cargoGrid, file1, file2)
 # # transfer.Unload(transfer.CargoGrid.cargo_grid[1][4])
 # # transfer.CargoGrid.output_manifest("File.txt")
 
-# # testing transfer
+# testing transfer
 transfer.Transfer("Transfer.txt")
 
 

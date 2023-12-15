@@ -3,9 +3,14 @@ from CargoGrid import Cargo_Grid
 import pandas as pd
 
 
-"""
 # testing Balance
-manifest = "ShipCase3.txt"
+# manifest = "ShipCase1.txt"
+# manifest = "ShipCase2.txt"
+# manifest = "ShipCase3.txt"
+# manifest = "TransferTestCase.txt"
+manifest = "SIFTCase.txt"
+
+
 headers = ['Position', 'Weight', 'Cargo']
 pandasDF_for_Manifest = pd.read_csv(
     manifest, sep=', ', names=headers, engine='python')
@@ -29,3 +34,4 @@ balance = Balance(cargo_grid)
 
 # testing SIFT function integrated with balance
 balance.Balance("SIFTSolution.txt")
+"""
