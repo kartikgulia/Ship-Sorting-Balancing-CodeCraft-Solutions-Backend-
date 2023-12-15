@@ -206,10 +206,10 @@ class Cargo_Grid:
             self.cargo_grid[old_row][old_column].weight = 0
             self.cargo_grid[old_row][old_column].name = "UNUSED"
 
-            if (new_column < 7):
+            if (new_column < 7 and old_column >= 7):
                 self.portSideMass += self.cargo_grid[new_row][new_column].weight
                 self.starboardMass -= self.cargo_grid[new_row][new_column].weight
-            else:
+            elif (new_column > 6 and old_column <= 6):
                 self.portSideMass -= self.cargo_grid[new_row][new_column].weight
                 self.starboardMass += self.cargo_grid[new_row][new_column].weight
 
