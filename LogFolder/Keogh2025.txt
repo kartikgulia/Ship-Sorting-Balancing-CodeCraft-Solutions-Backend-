@@ -170,3 +170,11 @@
 12/14/23: 03:18: Finished a Cycle. Manifest ShipCase5_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
 12/14/23: 03:18: Manifest ShipCase4.txt is opened, there are 7 containers
 12/14/23: 03:18: Finished a Cycle. Manifest ShipCase4_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 17:34: Manifest ShipCase2.txt is opened, there are 4 containers
+12/14/23: 17:34: "Dog" is offloaded
+12/14/23: 17:34: "Car" is onloaded
+12/14/23: 17:34: Finished a Cycle. Manifest ShipCase2_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.
+12/14/23: 17:36: Manifest ShipCase2.txt is opened, there are 4 containers
+12/14/23: 17:36: "Cat" is offloaded
+12/14/23: 17:37: "Car" is onloaded
+12/14/23: 17:37: Finished a Cycle. Manifest ShipCase2_OUTBOUND.txt was written to desktop, and a reminder pop-up to operator to send file was displayed.

@@ -1,2 +1,2 @@
-Move cargo from (1,4) to (1,7)
-Move cargo from (1,9) to (4,1)
+Move Ram from (1,4) to (1,7), Time: 14 minutes
+Move Owl from (1,9) to (1,6), Time: 19 minutes
