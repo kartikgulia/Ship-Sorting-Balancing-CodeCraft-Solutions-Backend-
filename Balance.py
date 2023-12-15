@@ -120,7 +120,6 @@ class Balance:
             file.write(output)
             self.cargoList.clear()
             sortedCargoList.clear()
-            # return 1
 
     def Balance(self, filename):
         i = 0  # keeps track of what move we are on
@@ -128,10 +127,6 @@ class Balance:
         initialGrid = Cargo_Grid(self.CargoGrid.pandasDF_for_Manifest)
         initialGrid.Grid_Copy(self.CargoGrid)
         if not self.CargoGrid.Balance_Check():
-
-            # sift = self.SIFT(filename)
-            # if sift == True:
-            # return
 
             balanced = False
             output = ""
@@ -150,8 +145,9 @@ class Balance:
                             cargo.position, self.CargoGrid.lowestPosition(column))
                         self.nodeList.append(cargoNode)
 
+                # sort node list by how large weight ratio is
                 # self.nodeList = sorted(
-                    # self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)  # sort node list by how large weight ratio is
+                    # self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)
 
                 # sort node list by how large weight ratio is and how low cost is
                 self.nodeList = sorted(self.nodeList, reverse=True, key=lambda x: (
@@ -163,9 +159,10 @@ class Balance:
                     prevWeightRatio = copy.deepcopy(
                         self.CargoGrid.Weight_Ratio)
                 else:
-                    # newWeightRatio = self.CargoGrid.Weight_Ratio
                     if (self.CargoGrid.Weight_Ratio == prevWeightRatio):
                         self.CargoGrid.Grid_Copy(initialGrid)
+                        self.cargoList.clear()
+                        self.CargoList()
                         self.SIFT(filename)
                         return
 
@@ -182,6 +179,9 @@ class Balance:
                     self.cargoList.clear()
                     self.nodeList.clear()
                     balanced = True
+
+                self.cargoList.clear()
+                self.CargoList()
 
         else:
             return
