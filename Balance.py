@@ -148,8 +148,10 @@ class Balance:
                             cargo.position, self.CargoGrid.lowestPosition(column))
                         self.nodeList.append(cargoNode)
 
+                # self.nodeList = sorted(
+                    # self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)  # sort node list by how large weight ratio is
                 self.nodeList = sorted(
-                    self.nodeList, reverse=True, key=lambda x: x.Weight_Ratio)  # sort node list by how large weight ratio is
+                    self.nodeList, reverse=True, key=lambda x: (x.Weight_Ratio, -x.Manhattan_Dist))  # sort node list by how large weight ratio is
                 self.CargoGrid.Grid_Copy(  # set cargo grid to grid wth largest weight ratio
                     self.nodeList.pop(0))
                 # outputs manifest of each move
