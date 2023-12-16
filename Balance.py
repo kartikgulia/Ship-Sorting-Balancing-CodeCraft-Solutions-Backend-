@@ -2,9 +2,7 @@ from CargoGrid import Cargo
 from CargoGrid import Cargo_Grid
 import copy
 import pandas as pd
-
 from manifestAccess import getManifestName
-# TODO: sift, writing to log, operations list, animation.
 
 
 class Balance:
@@ -71,10 +69,17 @@ class Balance:
                     self.CargoGrid.old_pos[1]) + ") to (" + str(self.CargoGrid.new_pos[0]) + "," + str(self.CargoGrid.new_pos[1]) + "), Time: " + str(self.CargoGrid.Manhattan_Dist) + " minutes\n"
 
         else:
+
             i = 1
-            row = 1
+
+            if (self.CargoGrid.cargo_grid[1][6].name == "NAN"):
+                row = 2
+            else:
+                row = 1
+
             leftColumn = 5
             rightColumn = 7
+
             start = True
             for cargo in sortedCargoList:
                 if start == True:
@@ -96,17 +101,26 @@ class Balance:
                     start = True
 
             self.CargoGrid.output_progression(0)
+
             j = 1
+            k = 1
             for cargo in reversed(self.cargoList):
+                highestPos = self.CargoGrid.highestContainer(k)
+                if (highestPos is not None):
+                    if (highestPos[0] == 8):
+                        k += 1
                 self.CargoGrid.change_pos(
-                    cargo.position, self.CargoGrid.lowestPosition(1))
+                    cargo.position, self.CargoGrid.lowestPosition(k))
                 cargo.position = self.CargoGrid.new_pos
                 output += "Move " + self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name + " from (" + str(self.CargoGrid.old_pos[0]) + "," + str(
                     self.CargoGrid.old_pos[1]) + ") to (" + str(self.CargoGrid.new_pos[0]) + "," + str(self.CargoGrid.new_pos[1]) + "), Time: " + str(self.CargoGrid.Manhattan_Dist) + " minutes\n"
                 self.CargoGrid.output_progression(j)
                 j += 1
 
-            for cargo in (self.cargoList):
+            self.cargoList.clear()
+            self.CargoList()
+
+            for cargo in reversed(self.cargoList):
                 for container in sortedCargoList:
                     if cargo.name == container.name:
                         self.CargoGrid.change_pos(
@@ -115,6 +129,7 @@ class Balance:
                             self.CargoGrid.old_pos[1]) + ") to (" + str(self.CargoGrid.new_pos[0]) + "," + str(self.CargoGrid.new_pos[1]) + "), Time: " + str(self.CargoGrid.Manhattan_Dist) + " minutes\n"
                         self.CargoGrid.output_progression(j)
                         j += 1
+                        break
 
         with open(filename, "w") as file:
             file.write(output)
@@ -126,6 +141,7 @@ class Balance:
         prevWeightRatio = 0
         initialGrid = Cargo_Grid(self.CargoGrid.pandasDF_for_Manifest)
         initialGrid.Grid_Copy(self.CargoGrid)
+
         if not self.CargoGrid.Balance_Check():
 
             balanced = False
@@ -133,16 +149,19 @@ class Balance:
 
             # outputs manifest of initial state
             self.CargoGrid.output_progression(i)
-            # self.CargoList()
+
             while not balanced:
                 i += 1
                 for cargo in reversed(self.cargoList):
                     for column in range(1, 13):  # column we drop cargo off at
+                        if (column == cargo.position[1]):
+                            continue
                         cargoNode = Cargo_Grid(
                             self.CargoGrid.pandasDF_for_Manifest)
                         cargoNode.Grid_Copy(self.CargoGrid)
                         cargoNode.change_pos(
                             cargo.position, self.CargoGrid.lowestPosition(column))
+                        # if (cargoNode.Manhattan_Dist != self.CargoGrid.Manhattan_Dist):
                         self.nodeList.append(cargoNode)
 
                 # sort node list by how large weight ratio is
@@ -152,26 +171,25 @@ class Balance:
                 # sort node list by how large weight ratio is and how low cost is
                 self.nodeList = sorted(self.nodeList, reverse=True, key=lambda x: (
                     x.Weight_Ratio, -x.Manhattan_Dist))
+
                 # set cargo grid to grid wth largest weight ratio with lowest cost
                 self.CargoGrid.Grid_Copy(self.nodeList.pop(0))
 
-                if (prevWeightRatio == 0):
+                if (self.CargoGrid.Weight_Ratio == prevWeightRatio):
+                    self.CargoGrid.Grid_Copy(initialGrid)
+                    self.cargoList.clear()
+                    self.CargoList()
+                    self.SIFT(filename)
+                    return
+                else:
                     prevWeightRatio = copy.deepcopy(
                         self.CargoGrid.Weight_Ratio)
-                else:
-                    if (self.CargoGrid.Weight_Ratio == prevWeightRatio):
-                        self.CargoGrid.Grid_Copy(initialGrid)
-                        self.cargoList.clear()
-                        self.CargoList()
-                        self.SIFT(filename)
-                        return
 
                 # outputs manifest of each move
                 self.CargoGrid.output_progression(i)
+
                 output += "Move " + self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name + " from (" + str(self.CargoGrid.old_pos[0]) + "," + str(
                     self.CargoGrid.old_pos[1]) + ") to (" + str(self.CargoGrid.new_pos[0]) + "," + str(self.CargoGrid.new_pos[1]) + "), Time: " + str(self.CargoGrid.Manhattan_Dist) + " minutes\n"
-                # output += f"Move {self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name} from ({str(self.CargoGrid.old_pos[0])},{str(
-                # self.CargoGrid.old_pos[1])}) to ({str(self.CargoGrid.new_pos[0])},{str(self.CargoGrid.new_pos[1])}), Time: {str(self.CargoGrid.Manhattan_Dist)} minutes\n"
 
                 if self.CargoGrid.Balance_Check():
                     with open(filename, "w") as file:

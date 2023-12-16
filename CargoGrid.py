@@ -160,35 +160,40 @@ class Cargo_Grid:
     def highestContainer(self, column):
         cargo_column = [row[column] for row in self.cargo_grid]
         for x in reversed(range(1, len(cargo_column))):
-            if (cargo_column[x].name != "UNUSED"):
+            if (cargo_column[x].name != "UNUSED") and cargo_column[x].name != "NAN":
                 return cargo_column[x].position
 
     def valid_pos(self, old_pos, new_pos):  # makes sure move is valid
-        x = new_pos[0]
-        y = new_pos[1]
-        # old position has a container above it
-        if (old_pos[0] == 8):
-            return True
-        elif (self.cargo_grid[old_pos[0] + 1][old_pos[1]].name != "UNUSED"):
-            return False
-        # new position is already filled or is nan
-        elif (self.cargo_grid[x][y].name != "UNUSED"):
-            return False
-        # new position has nothing beneath it to hold cargo and position below it is not the zero row or old position is beneath new position
-        elif ((self.cargo_grid[x-1][y].name == "UNUSED" and (x-1 != 0)) or (y == old_pos[1] and x-1 == old_pos[0])):
+        # x = new_pos[0]
+        # y = new_pos[1]
+        if new_pos is None:
             return False
         else:
-            return True
+            x = new_pos[0]
+            y = new_pos[1]
+            if (old_pos[0] == 8):
+                return True
+            # old position has a container above it
+            elif (self.cargo_grid[old_pos[0] + 1][old_pos[1]].name != "UNUSED"):
+                return False
+            # new position is already filled or is nan
+            elif (self.cargo_grid[x][y].name != "UNUSED"):
+                return False
+            # new position has nothing beneath it to hold cargo and position below it is not the zero row or old position is beneath new position
+            elif ((self.cargo_grid[x-1][y].name == "UNUSED" and (x-1 != 0)) or (y == old_pos[1] and x-1 == old_pos[0])):
+                return False
+            else:
+                return True
 
     # moves cargo to new positon and find manhattan distance and weights of starboard and portside. Used with valid_pos to make transfers
     def change_pos(self, old_pos, new_pos):
 
-        old_row = old_pos[0]
-        old_column = old_pos[1]
-        new_row = new_pos[0]
-        new_column = new_pos[1]
-
         if (self.valid_pos(old_pos, new_pos)):
+
+            old_row = old_pos[0]
+            old_column = old_pos[1]
+            new_row = new_pos[0]
+            new_column = new_pos[1]
 
             if (self.new_pos[0] != 0 and self.new_pos[1] != 0):
                 # want to get distance crane travels from where it drops off container to where it picks up another container
