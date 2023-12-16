@@ -42,34 +42,6 @@ class Balance:
                 self.CargoGrid.old_pos[1]) + ") to (" + str(self.CargoGrid.new_pos[0]) + "," + str(self.CargoGrid.new_pos[1]) + "), Time: " + str(self.CargoGrid.Manhattan_Dist) + " minutes\n"
             self.CargoGrid.output_progression(1)
 
-        # if length is two, move heavier container to middle and lighter to the right
-        elif (len(self.cargoList) == 2):
-            weight1 = self.cargoList[0].weight
-            weight2 = self.cargoList[1].weight
-
-            if (min(weight1, weight2) / max(weight1, weight2) < 0.9):
-
-                self.CargoGrid.output_progression(0)
-
-                if weight1 >= weight2:
-                    HeavyPos = self.cargoList[0].position
-                    LighterPos = self.cargoList[1].position
-
-                else:
-                    HeavyPos = self.cargoList[1].position
-                    LighterPos = self.cargoList[0].position
-
-                self.CargoGrid.change_pos(
-                    LighterPos, [1, 7])
-                self.CargoGrid.output_progression(1)
-                output += "Move " + self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name + " from (" + str(self.CargoGrid.old_pos[0]) + "," + str(
-                    self.CargoGrid.old_pos[1]) + ") to (" + str(self.CargoGrid.new_pos[0]) + "," + str(self.CargoGrid.new_pos[1]) + "), Time: " + str(self.CargoGrid.Manhattan_Dist) + " minutes\n"
-                self.CargoGrid.change_pos(
-                    HeavyPos.position, [1, 6])
-                self.CargoGrid.output_progression(2)
-                output += "Move " + self.CargoGrid.cargo_grid[self.CargoGrid.new_pos[0]][self.CargoGrid.new_pos[1]].name + " from (" + str(self.CargoGrid.old_pos[0]) + "," + str(
-                    self.CargoGrid.old_pos[1]) + ") to (" + str(self.CargoGrid.new_pos[0]) + "," + str(self.CargoGrid.new_pos[1]) + "), Time: " + str(self.CargoGrid.Manhattan_Dist) + " minutes\n"
-
         else:
             # move all containers to one column
             self.CargoGrid.output_progression(0)
